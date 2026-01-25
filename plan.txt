@@ -1,0 +1,64 @@
+Utilities:
+- pathwork
+    -work with path strings
+        -path_add, path_initialize
+    -possibly system() commands
+
+- input reader
+    -read_line, (read_all)
+        -usage of dynamic buffers
+
+
+Functional modules:
+- main
+
+- menu 
+    -display menu, return choices
+    -main options:
+        -new songbook
+        -edit songbook
+        -remove songbook
+    -new songbook
+        -choose name
+        -choose mode (above or in-text)
+        -choose export format (pdf, html, docx)
+    -edit songbook
+        -remove song
+        -add song
+        (-transpose song)
+
+-webwork
+    -create command for getting the file
+    -download (curl -sS) .html file
+    -extract needed content
+    -save to song_collection
+        -need to make a uniform format
+
+-[optional] some syllable magic
+    -figure out where the chords go and predict them
+        -problems:
+            -UTF-8 to ASCII equivalents
+            -cross-language
+            -no clear algorithm
+        -could be needed for type 2 tho
+
+
+-rest to be figured out
+
+
+Files:
+    -global
+        -program itself
+        -song_collection/
+            -songs/
+                -for every song a .txt file
+            -songlist.txt
+        -songbooks/
+            -songbook_list.txt (should contain info about mode and export format)
+            -[some_songbook]/
+                -[export-format-specific]/
+                    -[tmp_files]
+                -songlist.txt
+                -[latest_result[format]]
+
+
