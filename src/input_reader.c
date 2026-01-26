@@ -29,6 +29,7 @@ bool buffer_resize(DynBuff *buffer)
 }
 
 //reads one line until '\n' or EOF
+//returns NULL if EOF or error
 //needs to be freed later
 char *read_line(FILE *file)
 {
@@ -40,8 +41,20 @@ char *read_line(FILE *file)
         return NULL;
 
     int i;
-    while((i = fgetc(file)) != EOF)
+    while(true)
     {
+        i = fgetc(file);
+        if (i == EOF)
+        {
+            if (buffer.length == 0)
+            {
+                free(buffer.string);
+                return NULL;
+            }
+            else
+                break;
+        }
+        
         char c = (char)i;
         if (c == '\n')
             break;

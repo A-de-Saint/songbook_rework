@@ -81,27 +81,26 @@ bool path_add(Path *curr_path, char *to_add, char mode)
             to_add++;
     }
 
-    char *path_p = curr_path->path;
     for (unsigned int i = 0; to_add[i] != '\0'; i++)
     {
         //+3 for char to be added, possible DIFF_CHAR and '\0'
         if (curr_path->length + 3 >= curr_path->capacity)
             if (!path_resize(curr_path))
                 return false;
-        path_p[curr_path->length] = to_add[i];
+        curr_path->path[curr_path->length] = to_add[i];
         curr_path->length++;
     }
 
     if (mode == 'd')
     {
-        if (path_p[curr_path->length - 1] != DIFF_CHAR)
+        if (curr_path->path[curr_path->length - 1] != DIFF_CHAR)
         {
-            path_p[curr_path->length] = DIFF_CHAR;
+            curr_path->path[curr_path->length] = DIFF_CHAR;
             curr_path->length++;
         }
     }
 
-    path_p[curr_path->length] = '\0';
+    curr_path->path[curr_path->length] = '\0';
     return true;
 }
 

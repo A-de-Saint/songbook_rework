@@ -1,3 +1,6 @@
 *.o
 .tests/
 songbook
+songbooks/
+!songbooks/*.txt
+song_collection/songs/*
