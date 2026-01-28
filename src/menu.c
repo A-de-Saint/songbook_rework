@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "input_reader.h"
 #include "songbook_manager.h"
+#include "util.h"
 
 //reads one non-negative integer from stdin
 //returns -1 if illegal
@@ -101,5 +102,95 @@ bool new_songbook(Path *home_path)
     free(songbook.name);
     path_dtor(songbook.path);
 
+    return true;
+}
+
+//chooses songbook, returns true if well done, saves to save_to Songbook
+bool choose_songbook(Path *home_path, Songbook *save_to)
+{
+    //get path to songbook_list.txt
+    Path *songbooks_path = path_copy(home_path, false);
+    if (!path_add(songbooks_path, "songbooks/songbook_list.txt", 'f'))
+    {
+        path_dtor(songbooks_path);
+        return false;
+    }
+
+    FILE *file = fopen(songbooks_path->path, "r");
+    if (file == NULL)
+    {
+        fprintf(stderr, "Could not open songbook_list.txt\n");
+        return false;
+    }
+    path_dtor(songbooks_path);
+
+    //enumerate and save options
+    StringArray str_arr = str_arr_ctor();
+    if (str_arr.strings == NULL)
+    {
+        fclose(file);
+        return false;
+    }
+    int i = 0;
+    char *string;
+    printf("Choose songbook:\n");
+    while ((string = read_line(file)) != NULL)
+    {
+        if (string[0] == '\0')
+        {
+            free(string);
+            continue;
+        }
+
+        //print number and name of songbook
+        printf("[%d] ", i+1);
+        for (int j = 0; string[j] != '\\' && string[j] != '\0'; j++)
+            putchar(string[j]);
+        putchar('\n');
+        i++;
+
+        //save string to str_arr
+        if (!str_arr_add(&str_arr, string))
+        {
+            str_arr_dtor(&str_arr);
+            fclose(file);
+            free(string);
+            return false;
+        }
+    }
+    fclose(file);
+
+    //check for 'no songbooks yet' option
+    if (str_arr.size == 0)
+    {
+        printf("You have no existing songbooks\n");
+        str_arr_dtor(&str_arr);
+
+    }
+
+    //get user choice
+    printf("Your choice: ");
+    int choice;
+    while ((choice = readnum(1, (int)str_arr.size)) == -1)
+        printf("Invalid choice.\nTry again: ");
+    
+               //does not create path for songbook
+    bool res = decode_songbook_print(str_arr.strings[choice-1], save_to);
+    str_arr_dtor(&str_arr);
+    if (res == false)
+        return false;
+
+    //make path for songbook
+    Path *sngbk_path = path_copy(home_path, false);
+    res = path_add(sngbk_path, "songbooks", 'd');
+    if (res)
+        res = path_add(sngbk_path, save_to->name, 'd');
+    if (!res)
+    {
+        path_dtor(sngbk_path);
+        return false;
+    }
+
+    save_to->path = sngbk_path;
     return true;
 }

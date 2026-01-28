@@ -31,4 +31,10 @@ typedef struct {
 
 bool create_songbook(Songbook *songbook);
 
+void songbook_dtor(Songbook *songbook);
+
+char *make_songbook_print(Songbook *songbook);
+
+bool decode_songbook_print(char *to_decode, Songbook *save_to);
+
 #endif

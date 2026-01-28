@@ -28,8 +28,7 @@ Functional modules:
         (-transpose song)
 
 -webwork
-    -create command for getting the file
-    -download (curl -sS) .html file
+    -get HTML into a buffer using libcurl
     -extract needed content
     -save to song_collection
         -need to make a uniform format
