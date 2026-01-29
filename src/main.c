@@ -3,6 +3,7 @@
 #include "pathwork.h"
 #include "menu.h"
 #include "songbook_manager.h"
+#include "remover.h" //
 
 int main(void)
 {
@@ -25,6 +26,26 @@ int main(void)
             printf("Songbook chosen: %s\n", songbook.name);
 
         songbook_dtor(&songbook);
+    }
+    else if (choice == delete_sb)
+    {
+        Songbook songbook;
+        int del_choice = deletion_choice(home_path, &songbook);
+        if (del_choice == -1)
+            printf("Failed to get songbook to delete\n");
+        else if (del_choice == 1)
+        {
+            if (!remove_songbook(&songbook))
+                printf("Could not delete %s\n", songbook.name);
+            else 
+                printf("%s successfully removed\n", songbook.name);
+            songbook_dtor(&songbook);
+        }
+        else 
+        {
+            printf("%s will not be deleted.\n", songbook.name);
+            songbook_dtor(&songbook);
+        }   
     }
 
     path_dtor(home_path);

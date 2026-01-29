@@ -143,3 +143,54 @@ bool read_insert_write(Path *path, char *to_insert)
 
     return true;
 }
+
+bool read_remove_write(Path *file_path, char *to_remove)
+{
+    if (file_path == NULL || to_remove == NULL)
+    {
+        return false;
+    }
+
+    FILE *file_r = fopen(file_path->path, "r");
+    if (file_r == NULL)
+    {
+        fprintf(stderr, "read_remove_write: Could not open file.\n");
+        return false;
+    }
+
+    StringArray str_arr = str_arr_ctor();
+    char *string;
+    while ((string = read_line(file_r)) != NULL)
+    {
+        if (string[0] == '\0')
+        {
+            free(string);
+            continue;
+        }
+
+        if (strcmp(to_remove, string) == 0)
+        {
+            free(string);
+            continue;
+        }
+        else 
+            str_arr_add(&str_arr, string);
+    }
+    fclose(file_r);
+
+    FILE *file_w = fopen(file_path->path, "w");
+    if (file_w == NULL)
+    {
+        fprintf(stderr, "read_remove_write: Could not open file.\n");
+        str_arr_dtor(&str_arr);
+        return false;
+    }
+
+    for (unsigned int i = 0; i < str_arr.size; i++)
+    {
+        fprintf(file_w, "%s\n", str_arr.strings[i]);
+    }
+    str_arr_dtor(&str_arr);
+    fclose(file_w);
+    return true;
+}

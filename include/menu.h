@@ -21,4 +21,6 @@ bool new_songbook(Path *home_path);
 
 bool choose_songbook(Path *home_path, Songbook *save_to);
 
+int deletion_choice(Path *home_path, Songbook *save_to);
+
 #endif

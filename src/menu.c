@@ -165,7 +165,7 @@ bool choose_songbook(Path *home_path, Songbook *save_to)
     {
         printf("You have no existing songbooks\n");
         str_arr_dtor(&str_arr);
-
+        return false;
     }
 
     //get user choice
@@ -193,4 +193,28 @@ bool choose_songbook(Path *home_path, Songbook *save_to)
 
     save_to->path = sngbk_path;
     return true;
+}
+
+//returns: -1 if error; 0 if delete nothing, save_to allocated; 1 delete chosen songbook, save_to allocated
+int deletion_choice(Path *home_path, Songbook *save_to)
+{
+    if (home_path == NULL || save_to == NULL)
+    {
+        fprintf(stderr, "deletion_choice: NULL pointers among parameters\n");
+        return -1;
+    }
+
+    if (!choose_songbook(home_path, save_to))
+        return -1;
+
+    printf("Are you sure you want to remove %s?\n", save_to->name);
+    printf("Songbook is located at %s\n", save_to->path->path);
+    printf("[0] No\n[1] Yes\n");
+    printf("Your choice: ");
+
+    int choice;
+    while ((choice = readnum(0, 1)) == -1)
+        printf("Invalid choice.\nTry again: ");
+
+    return choice;    
 }

@@ -37,4 +37,6 @@ char *make_songbook_print(Songbook *songbook);
 
 bool decode_songbook_print(char *to_decode, Songbook *save_to);
 
+bool remove_songbook(Songbook *songbook);
+
 #endif

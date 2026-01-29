@@ -51,7 +51,10 @@ int fs_isdir(const char *path)
         struct stat st;
 
         if (lstat(path, &st) != 0)
+        {
+            fprintf(stderr, "fs_isdir: Not a file or a directory\n");
             return -1;
+        }
 
         return S_ISDIR(st.st_mode);
     #endif
@@ -63,7 +66,10 @@ bool rm_rf(Path *path)
 {
     int res = fs_isdir(path->path);
     if (res == -1)
+    {
+        fprintf(stderr, "rm_rf: nonexistent path\n");
         return false;
+    }
     if (res == 1)
     {
         fs_dir dir;

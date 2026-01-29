@@ -20,4 +20,6 @@ void str_arr_dtor(StringArray *str_arr);
 
 bool read_insert_write(Path *path, char *to_insert);
 
+bool read_remove_write(Path *file_path, char *to_remove);
+
 #endif

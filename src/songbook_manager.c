@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "util.h"
 #include <string.h>
+#include "remover.h"
 
 bool create_songbook(Songbook *songbook)
 {
@@ -110,4 +111,39 @@ bool decode_songbook_print(char *to_decode, Songbook *save_to)
     save_to->format = (Format)format_i;
 
     return true;
+}
+
+bool remove_songbook(Songbook *songbook)
+{
+    if (songbook == NULL || songbook->path == NULL)
+    {
+        fprintf(stderr, "remove_songbook: NULL pointers\n");
+        return false;
+    }
+
+    if (!rm_rf(songbook->path))
+        return false;
+
+    char *songbook_print = make_songbook_print(songbook);
+    if (songbook_print == NULL)
+        return false;
+
+    //create path for songbook_list.txt
+    Path *sblist_path = path_copy(songbook->path, false);
+    if (sblist_path == NULL)
+    {
+        free(songbook_print);
+        return false;
+    }
+    path_dirback(sblist_path); //now at songbooks/
+    if (!path_add(sblist_path, "songbook_list.txt", 'f'))
+    {
+        free(songbook_print);
+        path_dtor(sblist_path);
+        return false;
+    }
+    bool res = read_remove_write(sblist_path, songbook_print);
+    path_dtor(sblist_path);
+    free(songbook_print);
+    return res;
 }
