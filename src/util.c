@@ -5,6 +5,7 @@
 #include <string.h>
 
 #define STR_ARR_START_CAPACITY 32
+#define UPPERCASE_LOWERCASE_DIFF 32
 
 StringArray str_arr_ctor()
 {
@@ -192,5 +193,170 @@ bool read_remove_write(Path *file_path, char *to_remove)
     }
     str_arr_dtor(&str_arr);
     fclose(file_w);
+    return true;
+}
+
+//converts to lowercase ascii chars (utf8 -> ascii equivalents, other chars -> '-')
+bool convert_to_ascii(char *to_convert)
+{
+    if (to_convert == NULL)
+        return false;
+    
+    int i = 0;
+    int j = 0;
+    while (to_convert[i] != '\0')
+    {
+        //keep lowercase and numbers
+        if ((to_convert[i] >= 'a' && to_convert[i] <= 'z')
+            || (to_convert[i] >= '0' && to_convert[i] <= '9'))
+        {
+            to_convert[j] = to_convert[i];
+            j++;
+            i++;
+            continue;
+        }
+
+        //uppercase -> lowercase
+        if (to_convert[i] >= 'A' && to_convert[i] <= 'Z')
+        {
+            to_convert[j] = to_convert[i] + UPPERCASE_LOWERCASE_DIFF;
+            j++;
+            i++;
+            continue;
+        }
+
+        //other ascii chars get converted to '-'
+        unsigned char ch = (unsigned char)to_convert[i];
+        if (ch < 0x80)
+        {
+            to_convert[j] = '-';
+            j++;
+            i++;
+            continue;
+        }
+
+        unsigned int cp;
+        
+        //convert chars to utf-8 int
+        if ((ch & 0xE0) == 0xC0) //2 bytes
+        {
+            cp = ((ch & 0x1F) << 6) |
+                ((unsigned char)to_convert[i+1] & 0x3F);
+            i += 2;
+        }
+        else if ((ch & 0xF0) == 0xE0) //3 bytes
+        {
+            cp = ((ch & 0x0F) << 12) |
+                (((unsigned char)to_convert[i+1] & 0x3F) << 6) |
+                ((unsigned char)to_convert[i+2] & 0x3F);
+            i += 3;
+        }
+        else if ((ch & 0xF8) == 0xF0) //4 bytes
+        {
+            cp = ((ch & 0x07) << 18) |
+                (((unsigned char)to_convert[i+1] & 0x3F) << 12) |
+                (((unsigned char)to_convert[i+2] & 0x3F) << 6) |
+                ((unsigned char)to_convert[i+3] & 0x3F);
+            i += 4;
+        }
+        else 
+        {
+            to_convert[j] = '-';
+            j++;
+            i++;
+            continue;
+        }
+
+        //convert characters of interest to their ascii equivalents
+        switch (cp)
+        {
+            //č, Č
+            case 0x010D:
+            case 0x010C:
+                to_convert[j++] = 'c';
+                break;
+
+            //ř, Ř
+            case 0x0159:
+            case 0x0158:
+                to_convert[j++] = 'r';
+                break;
+
+            //ď, Ď
+            case 0x010F:
+            case 0x010E:
+                to_convert[j++] = 'd';
+                break;
+
+            //ě, Ě, é, É
+            case 0x011B:
+            case 0x011A:
+            case 0x00E9:
+            case 0x00C9:
+                to_convert[j++] = 'e';
+                break;
+
+            //ň, Ň
+            case 0x0148:
+            case 0x0147:
+                to_convert[j++] = 'n';
+                break;
+
+            //š, Š
+            case 0x0161:
+            case 0x0160:
+                to_convert[j++] = 's';
+                break;
+
+            //ť, Ť
+            case 0x0165:
+            case 0x0164:
+                to_convert[j++] = 't';
+                break;
+
+            //ž, Ž
+            case 0x017E:
+            case 0x017D:
+                to_convert[j++] = 'z';
+                break;
+
+            //ů, Ů, ú, Ú
+            case 0x016F:
+            case 0x016E:
+            case 0x00FA:
+            case 0x00DA:
+                to_convert[j++] = 'u';
+                break;
+
+            //á, Á
+            case 0x00E1:
+            case 0x00C1:
+                to_convert[j++] = 'a';
+                break;
+
+            //í, Í
+            case 0x00ED:
+            case 0x00CD:
+                to_convert[j++] = 'i';
+                break;
+
+            //ó, Ó
+            case 0x00F3:
+            case 0x00D3:
+                to_convert[j++] = 'o';
+                break;
+
+            //ý, Ý
+            case 0x00FD:
+            case 0x00DD:
+                to_convert[j++] = 'y';
+                break;
+
+            default:
+                to_convert[j++] = '-';
+        }
+    }
+    to_convert[j] = '\0';
+
     return true;
 }
