@@ -13,10 +13,10 @@ OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 all: $(BIN)
 
 $(BIN): $(OBJS)
-	$(CC) $(OBJS) -o $@
+	$(CC) $(OBJS) -lcurl -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c -lcurl $< -o $@
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)

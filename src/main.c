@@ -3,10 +3,13 @@
 #include "pathwork.h"
 #include "menu.h"
 #include "songbook_manager.h"
-#include "remover.h" //
+#include <curl/curl.h>
 
 int main(void)
 {
+    //load libcurl
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
     Path *home_path = path_ctor(".");
     ActionChoice choice = action_choice();
     //TODO all possible choices
@@ -49,5 +52,7 @@ int main(void)
     }
 
     path_dtor(home_path);
+    curl_global_cleanup();
+
     return 0;
 }

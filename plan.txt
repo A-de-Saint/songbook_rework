@@ -60,4 +60,31 @@ Files:
                 -songlist.txt
                 -[latest_result[format]]
 
+Unfirom song format:
+- Divide song into sections
+- Best find a source where I get in-line chords (type 2)
+    - Because type2 => type1 works, but type1 => type2 is risky
+- Sources (priority odered):
+    1. https://akordy.kytary.cz/ (type 1)
+        - has chords throughout the entire song
+        - easily convertible to type2
+        - naming is weird
+            - {url}/song/{songname}
+            - for different authors it's 
+                - {url}/song/{songname}-2
+                - or 3, 4, so on...
+    2. https://pisnicky-akordy.cz/ (type 1)
+        - better naming conventions
+            - {url}/{author}/{songname}
+            - but jarek-nohavica instead of jaromir-nohavica, lidove, taborove, some weird shit...
+        - easily obtainable chords
+            - but no support for type2
+            - often not throughout the entire song
+    3. https://www.brnkni.cz/ (type 2)
+        -impeccable naming conventions
+            - {url}/{author[0]}/{author}/{songname}
+        - type 2, well convertible, but unstable
+            -sometimes mid-syllable
+
+
 
