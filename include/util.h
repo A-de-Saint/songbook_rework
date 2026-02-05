@@ -24,4 +24,6 @@ bool read_remove_write(Path *file_path, char *to_remove);
 
 bool convert_to_ascii(char *to_convert);
 
+void trim_string(char *string);
+
 #endif

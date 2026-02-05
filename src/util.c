@@ -360,3 +360,47 @@ bool convert_to_ascii(char *to_convert)
 
     return true;
 }
+
+//trims string, so that there is no ' ' or '-' before or after the string, 
+//and so that there are no multiple ' ' or '-' in a row
+void trim_string(char *string)
+{
+    if (string == NULL)
+        return;
+
+    int i = 0;
+    int j = 0;
+
+    //trim start
+    while (string[i] == ' ' || string[i] == '-')
+        i++;
+
+    bool prev = false;
+    while (string[i] != '\0')
+    {
+        if (string[i] == ' ' || string[i] == '-')
+        {
+            if (!prev)
+            {
+                string[j++] = string[i];
+                prev = true;
+            }
+            i++;
+            continue;
+        }
+
+        string[j++] = string[i++];
+        prev = false;
+    }
+
+    if (j > 0)
+    {
+        if (string[j-1] == ' ' || string[j-1] == '-')
+        {
+            string[j-1] = '\0';
+            return;
+        }
+    }
+
+    string[j] = '\0';
+}

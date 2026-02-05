@@ -2,6 +2,7 @@
 #include "input_reader.h"
 #include "songbook_manager.h"
 #include "util.h"
+#include <string.h>
 
 //reads one non-negative integer from stdin
 //returns -1 if illegal
@@ -217,4 +218,56 @@ int deletion_choice(Path *home_path, Songbook *save_to)
         printf("Invalid choice.\nTry again: ");
 
     return choice;    
+}
+
+//function for adding a song to song_collection
+//if return == false, still needs to be freed
+//TODO add function to check if the song isn't already in the songbook
+bool add_song(Path *home_path, Song *save_to)
+{
+    if (home_path == NULL || save_to == NULL)
+        return false;
+    if (save_to->lines.strings == NULL)
+        return false;
+
+    //get author and convert to ascii
+    //save_to->author_ascii == "idk" is possible
+    printf("Author (type 'idk' if unclear): ");
+    char *author = read_line(stdin);
+    if (author == NULL)
+        return false;
+    convert_to_ascii(author);
+    trim_string(author);
+    save_to->author_ascii = author;
+
+    //get song name and convert to ascii
+    printf("Song name: ");
+    char *sng_name = read_line(stdin);
+    if (sng_name == NULL)
+        return false;
+    convert_to_ascii(sng_name);
+    trim_string(sng_name);
+    save_to->name_ascii = sng_name;
+
+    //try finding song in song_collection
+    Path* song_path;
+    if (strcmp(author, "idk") == 0)
+    {
+        song_path = song_try_find_noauthor(sng_name, home_path);
+    }
+    else 
+    {
+        song_path = song_try_find(sng_name, author, home_path);
+    }
+    
+    if (song_path != NULL)
+    {
+        //TODO read song from song_collection
+        path_dtor(song_path);
+        return true;
+    }
+
+    //TODO download song from web
+
+    return true;
 }

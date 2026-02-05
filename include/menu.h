@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "songbook_manager.h"
+#include "song_manager.h"
 
 typedef enum {
     exit_program,
@@ -22,5 +23,7 @@ bool new_songbook(Path *home_path);
 bool choose_songbook(Path *home_path, Songbook *save_to);
 
 int deletion_choice(Path *home_path, Songbook *save_to);
+
+bool add_song(Path *home_path, Song *save_to);
 
 #endif

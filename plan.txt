@@ -87,4 +87,25 @@ Unfirom song format:
             -sometimes mid-syllable
 
 
+songlist.txt
+    - save songs by their filename in song_collection
+    - format:
+        "%s_%s", song->name_ascii, song->author_ascii
+
+saving a song
+    - options:
+        1. save only to song_collection
+        2. save to song_collection and turn it into given format
+        - easy solution - just return song (in parameters), and if 1., dtor it rightaway
+    - workflow:
+        - first of all, the implementation should be as follows:
+            - user writes song name and author, which get converted to ascii only formatted text
+            - if user types 'idk' as an author, it should look for all possibilities
+        1. Try to find given song in song_collection
+            - if (!idk) -> get print -> strcmp until found or EOF
+            - if (idk) -> decode each -> strcmp on name -> if match, ask user
+        2. (!found) download song (akordy-kytary)
+            - if (!idk) -> download -> parse author -> negative -> not found (tell user to try again with 'idk')
+            - if (idk) -> download -> parse author -> ask user -> negative -> do it again, with i+1
+
 

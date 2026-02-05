@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "songbook_manager.h"
 #include <curl/curl.h>
+#include "song_manager.h"
 
 int main(void)
 {
@@ -50,6 +51,11 @@ int main(void)
             songbook_dtor(&songbook);
         }   
     }
+
+    /*Song song;
+    song_ctor(&song);
+    add_song(home_path, &song);
+    song_dtor(&song);*/
 
     path_dtor(home_path);
     curl_global_cleanup();
