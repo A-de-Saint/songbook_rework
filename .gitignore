@@ -2,5 +2,6 @@
 .tests/
 songbook
 songbooks/
-!songbooks/songbook_list.txt
+!songbook_list.txt
 song_collection/songs/*
+unused

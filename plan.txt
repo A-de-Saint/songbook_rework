@@ -108,4 +108,32 @@ saving a song
             - if (!idk) -> download -> parse author -> negative -> not found (tell user to try again with 'idk')
             - if (idk) -> download -> parse author -> ask user -> negative -> do it again, with i+1
 
+song formatting on akordy-kytary
+    - div id=sheet-content
+        - more divs
+            - set of div class=scs-section
+            - each is class=scs-section data-type={intro || verse || chorus || interlude || ending}
+                - within each set of divs representing lines
+                    - lyrics directly within
+                    - chords always where they should be (mid-syllables)
+                        - chords like this:
+                        - div class=scs-chord
+                            - span class=scs-chk (main chord part)
+                            - span class=scs-chv (minor or something) (optional)
+                -example:
+                    <div>
+                    <div class="scs-chord"><span class="scs-chk">C</span></div>Z rozmláce<div class="scs-chord"><span class="scs-chk">A</span><span class="scs-chv">m</span></div>nýho kostela
+                    </div>
 
+song formatting (my style)
+    - first two lines will contain name and author
+    - state-style 
+        - based on my SongState enum
+        - every SongPart will look like this:
+            - \num\ 
+                lines 
+              \num\
+            - where num is enum to int and lines are lines
+    - lines saved like this:
+        [C]Z rozmláce[Ami]nýho kostela
+            -which also means that if (class == scs-chv && content == "m"): content = "mi"

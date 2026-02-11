@@ -7,10 +7,10 @@
 #define STR_ARR_START_CAPACITY 32
 #define UPPERCASE_LOWERCASE_DIFF 32
 
-StringArray str_arr_ctor()
+StringArray str_arr_ctor(unsigned int capacity)
 {
     StringArray str_arr;
-    str_arr.capacity = STR_ARR_START_CAPACITY;
+    str_arr.capacity = capacity;
     str_arr.strings = malloc(str_arr.capacity * sizeof(char *));
     str_arr.size = 0;
     return str_arr;
@@ -65,6 +65,7 @@ void str_arr_dtor(StringArray *str_arr)
 //reads a text file, saves lines, inserts to_insert alphabetically as a line, writes new text file
 //cannot add empty string
 //path must include filename and suffix
+//if already there, won't add again (no duplicates allowed)
 bool read_insert_write(Path *path, char *to_insert)
 {
     if (path == NULL || to_insert == NULL)
@@ -78,7 +79,7 @@ bool read_insert_write(Path *path, char *to_insert)
     char *to_insert_cpy = malloc(strlen(to_insert) + 1);
     strcpy(to_insert_cpy, to_insert);
 
-    StringArray str_arr = str_arr_ctor();
+    StringArray str_arr = str_arr_ctor(STR_ARR_START_CAPACITY);
     FILE *file = fopen(path->path, "r");
 
     bool added = false;
@@ -93,7 +94,13 @@ bool read_insert_write(Path *path, char *to_insert)
                 continue;
             }
 
-            if (!added && strcmp(to_insert, string) <= 0)
+            int comp = strcmp(to_insert, string);
+            if (comp == 0) //prevents duplicates
+            {
+                free(to_insert_cpy);
+                added = true;
+            }
+            if (!added && comp < 0)
             {
                 if (!str_arr_add(&str_arr, to_insert_cpy))
                 {
@@ -159,7 +166,7 @@ bool read_remove_write(Path *file_path, char *to_remove)
         return false;
     }
 
-    StringArray str_arr = str_arr_ctor();
+    StringArray str_arr = str_arr_ctor(STR_ARR_START_CAPACITY);
     char *string;
     while ((string = read_line(file_r)) != NULL)
     {

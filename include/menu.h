@@ -24,6 +24,6 @@ bool choose_songbook(Path *home_path, Songbook *save_to);
 
 int deletion_choice(Path *home_path, Songbook *save_to);
 
-bool add_song(Path *home_path, Song *save_to);
+bool get_song(Path *home_path, Song *save_to);
 
 #endif

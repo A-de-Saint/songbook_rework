@@ -4,6 +4,8 @@
 #include "util.h"
 #include <string.h>
 
+#define OPTIONS_START_CAPACITY 8
+
 //reads one non-negative integer from stdin
 //returns -1 if illegal
 int readnum(int min, int max)
@@ -126,7 +128,7 @@ bool choose_songbook(Path *home_path, Songbook *save_to)
     path_dtor(songbooks_path);
 
     //enumerate and save options
-    StringArray str_arr = str_arr_ctor();
+    StringArray str_arr = str_arr_ctor(OPTIONS_START_CAPACITY);
     if (str_arr.strings == NULL)
     {
         fclose(file);
@@ -222,12 +224,12 @@ int deletion_choice(Path *home_path, Songbook *save_to)
 
 //function for adding a song to song_collection
 //if return == false, still needs to be freed
-//TODO add function to check if the song isn't already in the songbook
-bool add_song(Path *home_path, Song *save_to)
+//save_to should be initialized
+bool get_song(Path *home_path, Song *save_to)
 {
     if (home_path == NULL || save_to == NULL)
         return false;
-    if (save_to->lines.strings == NULL)
+    if (save_to->data.parts == NULL)
         return false;
 
     //get author and convert to ascii
@@ -262,12 +264,30 @@ bool add_song(Path *home_path, Song *save_to)
     
     if (song_path != NULL)
     {
-        //TODO read song from song_collection
+        printf("Song found in song_collection!\n");
+        bool decoding_res = decode_song(song_path, save_to);
+        if (!decoding_res)
+        {
+            fprintf(stderr, "Failed to decode song from song_collection.\n");
+        }
         path_dtor(song_path);
-        return true;
+        return decoding_res;
     }
-
-    //TODO download song from web
+    else //song not found in song_collection
+    {
+        bool noauthor = strcmp(author, "idk") == 0;
+        bool download_res = download_song_ak(save_to, noauthor);
+        if (download_res)
+        {
+            if (!add_song_songcollection(home_path, save_to))
+            {
+                fprintf(stderr, "Failed to add song file to song_collection\n");
+                download_res = false;
+            }
+        }
+        if (!download_res)
+            return false;
+    }
 
     return true;
 }

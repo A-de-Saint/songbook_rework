@@ -54,7 +54,8 @@ int main(void)
 
     /*Song song;
     song_ctor(&song);
-    add_song(home_path, &song);
+    if (!get_song(home_path, &song))
+        printf("something went wrong\n");
     song_dtor(&song);*/
 
     path_dtor(home_path);

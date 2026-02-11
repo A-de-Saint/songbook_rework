@@ -10,7 +10,7 @@ typedef struct {
     unsigned int capacity;
 } StringArray;
 
-StringArray str_arr_ctor();
+StringArray str_arr_ctor(unsigned int capacity);
 
 bool str_arr_resize(StringArray *str_arr);
 
