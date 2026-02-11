@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -Iinclude
 
 SRC_DIR = src
-OBJ_DIR = include
+OBJ_DIR = obj
 BIN = songbook
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
@@ -16,7 +16,7 @@ $(BIN): $(OBJS)
 	$(CC) $(OBJS) -lcurl -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c -lcurl $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)

@@ -137,3 +137,9 @@ song formatting (my style)
     - lines saved like this:
         [C]Z rozmláce[Ami]nýho kostela
             -which also means that if (class == scs-chv && content == "m"): content = "mi"
+
+- newest
+    - I can download song and add them to song_collection
+    - I can also decode song_collection songs
+    - Now I should get to specific formats (pain)
+    - let us start with .tex

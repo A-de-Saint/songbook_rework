@@ -1,7 +1,6 @@
 *.o
 .tests/
 songbook
-songbooks/
-!songbook_list.txt
+obj
 song_collection/songs/*
 unused
