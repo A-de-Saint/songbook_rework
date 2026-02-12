@@ -4,3 +4,7 @@ songbook
 obj
 song_collection/songs/*
 unused
+*.aux
+*.log
+*.pdf
+test_folder

@@ -1,0 +1,26 @@
+\documentclass{songbook}
+
+\title{}
+\author{} %optional - fill if you'd like
+\date{}
+
+\begin{document}
+
+\begin{titlepage}
+    \vspace*{\fill}
+    \begin{center}
+        \makeatletter
+        \songbookname{\@title}
+        \songbookauthor{\@author}
+        \makeatother
+    \end{center}
+    \vspace*{\fill}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+\input{songs.tex}
+
+\end{document}

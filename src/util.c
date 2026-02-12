@@ -411,3 +411,16 @@ void trim_string(char *string)
 
     string[j] = '\0';
 }
+
+//checks string for unsupported chars (such as '\' or '/' or '|')
+//returns [unsupported char] if !okay, else returns '\0'
+char check_name(char *name)
+{
+    for (int i = 0; name[i] != '\0'; i++)
+    {
+        char c = name[i];
+        if (c == '\\' || c == '/' || c == '|')
+            return c;
+    }
+    return '\0';
+}

@@ -3,6 +3,8 @@
 #include "songbook_manager.h"
 #include "util.h"
 #include <string.h>
+#include "ak_parser.h"
+#include "remover.h"
 
 #define OPTIONS_START_CAPACITY 8
 
@@ -57,16 +59,35 @@ bool new_songbook(Path *home_path)
     printf("NEW SONGBOOK\n");
 
     Songbook songbook;
+
+    //create path
+    printf("Choose name: ");
+    char c;
+    char *name = read_line(stdin);
+    if (name == NULL)
+        return false;
+    trim_sides(name);
+    //check name for empty string or invalid chars
+    while ((c = check_name(name)) != '\0' || name[0] == '\0')
+    {
+        if (c != '\0')
+            printf("Name contains invalid characted '%c'\n", c);
+        else
+            printf("Name cannot be empty\n");
+        printf("Try again: ");
+        name = read_line(stdin);
+        if (name == NULL)
+            return false;
+        trim_sides(name);
+    }
+
+    //create songbook path
     Path *path = path_copy(home_path, false); //copy, so home_path stays the same
     if (!path_add(path, "songbooks", 'd'))
     {
         path_dtor(path);
         return false;
     }
-
-    //create path
-    printf("Choose name: ");
-    char *name = read_line(stdin);
     if (!path_add(path, name, 'd'))
     {
         path_dtor(path);
@@ -97,6 +118,7 @@ bool new_songbook(Path *home_path)
     //create specified songbook
     if (!create_songbook(&songbook))
     {
+        rm_rf(songbook.path);
         free(songbook.name);
         path_dtor(songbook.path);
         return false;

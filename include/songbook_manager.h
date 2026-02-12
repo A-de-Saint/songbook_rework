@@ -39,4 +39,10 @@ bool decode_songbook_print(char *to_decode, Songbook *save_to);
 
 bool remove_songbook(Songbook *songbook);
 
+bool songbook_tex_init(Songbook *songbook);
+
+bool tex_add_maintex(Path *tex_path, char *songbook_name);
+
+bool copy_file(Path *copy_from, Path *copy_to);
+
 #endif

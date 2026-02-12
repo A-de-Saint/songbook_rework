@@ -26,4 +26,6 @@ bool convert_to_ascii(char *to_convert);
 
 void trim_string(char *string);
 
+char check_name(char *name);
+
 #endif
