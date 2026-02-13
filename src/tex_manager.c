@@ -169,6 +169,9 @@ int get_font_size_split(SongData *song_data, Type type, int values[2])
     for (unsigned int i = 0; i < song_data->count; i++)
     {
         SongPart *part = &song_data->parts[i];
+        //the ratio for top-index stuff should be about 1.5, therefore +1 on odds, +2 on evens
+        //which is why this:
+        bool evenLine = false;
         for (unsigned int j = 0; j < part->lines.size; j++)
         {
             char *line = part->lines.strings[j];
@@ -202,10 +205,16 @@ int get_font_size_split(SongData *song_data, Type type, int values[2])
                 max_len = len;
 
             //increase rows based on type
-            if (type == type1)
+            if (type == type1 || evenLine)
+            {
                 row_count += 2;
+                evenLine = false;
+            }
             else 
+            {
+                evenLine = true;
                 row_count++;
+            }
         }
         row_count++;
     }
@@ -218,7 +227,7 @@ int get_font_size_split(SongData *song_data, Type type, int values[2])
     const int rows_constant = 740;
     const float first_to_second_ratio = 1.3;
     const int max_allowed_text_size = 18;
-    const int split_cols_const = 400;
+    const int split_cols_const = 450;
     const int max_rows_number = 48;
     const int min_cols_number = 50;
     
@@ -262,7 +271,7 @@ int get_font_size_split(SongData *song_data, Type type, int values[2])
             if (type == type1)
                 measured += song_data->parts[i].lines.size * 2 + 1;
             else
-                measured += song_data->parts[i].lines.size + 1;
+                measured += (unsigned int)((float)song_data->parts[i].lines.size * 1.5) + 1;
 
             if (measured >= target)
             {

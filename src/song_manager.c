@@ -313,11 +313,14 @@ Path *song_try_find_noauthor(char *song_name, Path *home_path)
             //if match, ask if that's the right one
             if (cmp_res == 0)
             {
+                putchar('\n');
                 printf("Possible match found in song_collection\n");
                 printf("Is this the right song?\n");
+                putchar('\n');
                 printf("%s by %s\n", name, author);
                 free(name);
                 free(author);
+                putchar('\n');
                 printf("[0] No\n[1] Yes\n[2] Uncertain (show part of the text)\n");
                 printf("Your choice: ");
                 int choice;
@@ -375,6 +378,7 @@ Path *song_try_find_noauthor(char *song_name, Path *home_path)
                         continue;
                     }
 
+                    putchar('\n');
                     printf("Is this the one?\n");
                     printf("[0] No\n[1] Yes\nYour choice: ");
                     int peek_choice;
@@ -524,8 +528,11 @@ bool download_song_ak(Song *song, bool noauthor)
 
         if (noauthor)
         {
+            putchar('\n');
             printf("Found a song!\n");
+            putchar('\n');
             printf("%s by %s\nThe song goes:\n%s\n", song->name_utf, song->author_utf, description);
+            putchar('\n');
             printf("Is this the one?\n");
             printf("[0] No\n[1] Yes\n");
             printf("Your choice: ");
@@ -713,7 +720,7 @@ bool decode_song(Path *path, Song *song)
     if (strcmp(song->author_ascii, "idk") == 0)
     {
         free(song->author_ascii);
-        song->author_ascii = malloc(strlen(song->author_utf));
+        song->author_ascii = malloc(strlen(song->author_utf) + 1);
         if (song->author_ascii == NULL)
             return false;
         strcpy(song->author_ascii, song->author_utf);
@@ -807,6 +814,9 @@ bool add_song_songlist(char *author_ascii, char *name_ascii, Path *songbook_path
     }
 
     bool result = read_insert_write(path, print);
+
+    path_dtor(path);
+    free(print);
 
     return result;
 }

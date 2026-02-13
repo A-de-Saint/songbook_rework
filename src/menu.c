@@ -38,6 +38,7 @@ int readnum(int min, int max)
 //shows first menu screen and reads input
 ActionChoice action_choice()
 {
+    putchar('\n');
     printf("Choose action you wish to do:\n");
 
     printf("[0] Exit program\n");
@@ -50,12 +51,12 @@ ActionChoice action_choice()
     while ((choice = readnum(0, 3)) == -1)
         printf("Invalid input.\nTry again: ");
 
-    putchar('\n');
     return choice;
 }
 
 bool new_songbook(Path *home_path)
 {
+    putchar('\n');
     printf("NEW SONGBOOK\n");
 
     Songbook songbook;
@@ -97,6 +98,7 @@ bool new_songbook(Path *home_path)
     songbook.name = name;
     songbook.path = path;
 
+    putchar('\n');
     printf("Choose mode:\n");
     printf("[1] Above-text chords\n");
     printf("[2] In-text chords (top-index)\n");
@@ -106,6 +108,7 @@ bool new_songbook(Path *home_path)
         printf("Invalid choice\nTry again: ");
     songbook.type = choice;
     
+    putchar('\n');
     printf("Choose songbook format:\n");
     printf("[1] LaTeX (PDF)\n");
     printf("[2] HTML\n");
@@ -158,6 +161,7 @@ bool choose_songbook(Path *home_path, Songbook *save_to)
     }
     int i = 0;
     char *string;
+    putchar('\n');
     printf("Choose songbook:\n");
     while ((string = read_line(file)) != NULL)
     {
@@ -232,6 +236,7 @@ int deletion_choice(Path *home_path, Songbook *save_to)
     if (!choose_songbook(home_path, save_to))
         return -1;
 
+    putchar('\n');
     printf("Are you sure you want to remove %s?\n", save_to->name);
     printf("Songbook is located at %s\n", save_to->path->path);
     printf("[0] No\n[1] Yes\n");
@@ -256,6 +261,7 @@ bool get_song(Path *home_path, Song *save_to)
 
     //get author and convert to ascii
     //save_to->author_ascii == "idk" is possible
+    putchar('\n');
     printf("Author (type 'idk' if unclear): ");
     char *author = read_line(stdin);
     if (author == NULL)
@@ -286,6 +292,7 @@ bool get_song(Path *home_path, Song *save_to)
     
     if (song_path != NULL)
     {
+        putchar('\n');
         printf("Song found in song_collection!\n");
         bool decoding_res = decode_song(song_path, save_to);
         if (!decoding_res)
@@ -316,6 +323,7 @@ bool get_song(Path *home_path, Song *save_to)
 
 EditSBChoice edit_choice()
 {
+    putchar('\n');
     printf("\nChoose action to perform upon songbook:\n");
     printf("[0] Undo\n[1] Add song\n[2] Remove song\n");
     printf("Your choice: ");

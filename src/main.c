@@ -14,6 +14,8 @@ int main(void)
 
     Path *home_path = path_ctor(".");
 
+    printf("---SONGBOOK---\nA program made for automatically creating songbooks\n");
+
     while(true)
     {
         ActionChoice choice = action_choice();
@@ -40,24 +42,36 @@ int main(void)
 
             if (edit_action == add_song)
             {
+                //get a song
                 if (!get_song(home_path, &song))
                 {
                     fprintf(stderr, "Failed to get song.\n");
-                    continue;
+                    goto song_edit_end;
                 }
+
+                //add the song based on format
                 if (songbook.format == tex)
                 {
                     if (!add_song_tex(&songbook, &song))
                     {
                         fprintf(stderr, "Failed to add %s to %s\n", song.name_utf, songbook.name);
-                        continue;
+                        goto song_edit_end;
                     }
                 }
+
+                //add song to songlist
+                if (!add_song_songlist(song.author_ascii, song.name_ascii, songbook.path))
+                {
+                    fprintf(stderr, "Song couldn't be added to songlist.txt in %s\n", songbook.name);
+                }
+                putchar('\n');
+                printf("%s by %s successfully added to %s\n", song.name_utf, song.author_utf, songbook.name);
             }
 
+        song_edit_end:
             song_dtor(&song);
-
             songbook_dtor(&songbook);
+            continue;
         }
         else if (choice == delete_sb)
         {
@@ -81,7 +95,7 @@ int main(void)
         }
         else
         {
-            printf("Bye!\n");
+            printf("\nBye!\n");
             break;
         }
     }

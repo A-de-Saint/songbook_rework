@@ -279,6 +279,7 @@ bool parse_part_ak(char *curr_html, char **read_until, SongPart *song_part)
         while (curr_html[0] != '\0') //not really, just in case it ended prematurely
         {
             //if <br || </ -> end of line
+            //if <char> -> weird, skip that one
             if (curr_html[0] == '<')
             {
                 if (curr_html[1] == 'b' && curr_html[2] == 'r')
@@ -286,6 +287,11 @@ bool parse_part_ak(char *curr_html, char **read_until, SongPart *song_part)
                     //just read after the end and return
                     res = s_read_until(&curr_html[2], "/div>", &curr_html);
                     break;
+                }
+                if (strncmp(curr_html, "<char>", 6) == 0) //skip <char>
+                {
+                    res = s_read_until(&curr_html[6], "</char>", &curr_html);
+                    continue;
                 }
                 else if (curr_html[1] == '/')
                 {
@@ -295,13 +301,13 @@ bool parse_part_ak(char *curr_html, char **read_until, SongPart *song_part)
                 }
                 else //we're dealing with a chord
                 {
-                    buffer_add(&buffer, '[');
                     res = s_read_until(curr_html, "class=\"scs-chk\"", &curr_html);
                     if (res == -1)
                         break;
                     res = s_read_until(curr_html, ">", &curr_html);
                     if (res == -1)
                         break;
+                    buffer_add(&buffer, '[');
 
                     //now at scs-chk">
                     char chord[11];
