@@ -340,6 +340,9 @@ bool parse_part_ak(char *curr_html, char **read_until, SongPart *song_part)
                         }
                         else if (curr_html[0] == 'b')
                         {
+                            res = s_read_until(curr_html, ">", &curr_html);
+                            if (res == -1)
+                                break;
                             buffer_add(&buffer, '/');
                             sscanf(curr_html, "%10[^<]", chord);
                             for (int i = 0; chord[i] != '\0'; i++)

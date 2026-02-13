@@ -2,8 +2,13 @@
 #define PATHWORK_H
 
 #define PATH_START_CAPACITY 30
-#define DIFF_CHAR '/'
 #include <stdbool.h>
+
+#ifdef _WIN32
+    #define DIFF_CHAR '\\'
+#else
+    #define DIFF_CHAR '/'
+#endif
 
 typedef struct {
     char *path;

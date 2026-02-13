@@ -67,4 +67,6 @@ bool add_song_songcollection(Path *home_path, Song *song);
 
 bool decode_song(Path *path, Song *song);
 
+bool add_song_songlist(char *author_ascii, char *name_ascii, Path *songbook_path);
+
 #endif

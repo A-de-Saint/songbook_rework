@@ -399,6 +399,7 @@ Path *song_try_find_noauthor(char *song_name, Path *home_path)
         }
         free(line);
     }
+    path_dtor(path);
     return NULL;
 }
 
@@ -535,7 +536,7 @@ bool download_song_ak(Song *song, bool noauthor)
             //if yes, create ascii author and break with good result
             if (choice == 1)
             {
-                char *ascii_author = malloc(strlen(song->author_utf));
+                char *ascii_author = malloc(strlen(song->author_utf) + 1);
                 ascii_author = strcpy(ascii_author, song->author_utf);
                 convert_to_ascii(ascii_author);
                 trim_string(ascii_author);
@@ -561,6 +562,16 @@ bool download_song_ak(Song *song, bool noauthor)
         free(html);
         html = NULL;
         read_till = NULL;
+        if (song->author_utf != NULL)
+        {
+            free(song->author_utf);
+            song->author_utf = NULL;
+        }
+        if (song->name_utf != NULL)
+        {
+            free(song->name_utf);
+            song->name_utf = NULL;
+        }
 
         i++;
     }
@@ -698,6 +709,18 @@ bool decode_song(Path *path, Song *song)
     trim_sides(author);
     song->author_utf = author;
 
+    //add author_ascii if unknown
+    if (strcmp(song->author_ascii, "idk") == 0)
+    {
+        free(song->author_ascii);
+        song->author_ascii = malloc(strlen(song->author_utf));
+        if (song->author_ascii == NULL)
+            return false;
+        strcpy(song->author_ascii, song->author_utf);
+        convert_to_ascii(song->author_ascii);
+        trim_string(song->author_ascii);
+    }
+
     //read lines
     while (true)
     {
@@ -758,4 +781,32 @@ bool decode_song(Path *path, Song *song)
     fclose(file);
 
     return true;
+}
+
+//adds song to songlist in a given songbook
+bool add_song_songlist(char *author_ascii, char *name_ascii, Path *songbook_path)
+{
+    if (author_ascii == NULL || name_ascii == NULL || songbook_path == NULL || songbook_path->path == NULL)
+        return false;
+    
+    //build path to songlist.txt
+    Path *path = path_copy(songbook_path, false);
+    if (path == NULL)
+        return false;
+    if (!path_add(path, "songlist.txt", 'f'))
+    {
+        path_dtor(path);
+        return false;
+    }
+
+    char *print = create_song_print(name_ascii, author_ascii);
+    if (print == NULL)
+    {
+        path_dtor(path);
+        return false;
+    }
+
+    bool result = read_insert_write(path, print);
+
+    return result;
 }

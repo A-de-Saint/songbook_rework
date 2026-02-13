@@ -313,3 +313,14 @@ bool get_song(Path *home_path, Song *save_to)
 
     return true;
 }
+
+EditSBChoice edit_choice()
+{
+    printf("\nChoose action to perform upon songbook:\n");
+    printf("[0] Undo\n[1] Add song\n[2] Remove song\n");
+    printf("Your choice: ");
+    int choice;
+    while ((choice = readnum(0,2)) == -1)
+        printf("Invalid choice.\n Try again: ");
+    return choice;
+}

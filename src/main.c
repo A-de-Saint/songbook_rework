@@ -5,6 +5,7 @@
 #include "songbook_manager.h"
 #include <curl/curl.h>
 #include "song_manager.h"
+#include "tex_manager.h"
 
 int main(void)
 {
@@ -12,44 +13,77 @@ int main(void)
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
     Path *home_path = path_ctor(".");
-    ActionChoice choice = action_choice();
-    //TODO all possible choices
-    if (choice == new_sb)
-    {
-        if (!new_songbook(home_path))
-            printf("Failed to create specified songbook.\n");
-        else 
-            printf("New songbook created successfully\n");
-    }
-    else if (choice == edit_sb)
-    {
-        Songbook songbook;
-        if (!choose_songbook(home_path, &songbook))
-            printf("Failed to get songbook to edit.\n");
-        else
-            printf("Songbook chosen: %s\n", songbook.name);
 
-        songbook_dtor(&songbook);
-    }
-    else if (choice == delete_sb)
+    while(true)
     {
-        Songbook songbook;
-        int del_choice = deletion_choice(home_path, &songbook);
-        if (del_choice == -1)
-            printf("Failed to get songbook to delete\n");
-        else if (del_choice == 1)
+        ActionChoice choice = action_choice();
+        //TODO all possible choices
+        if (choice == new_sb)
         {
-            if (!remove_songbook(&songbook))
-                printf("Could not delete %s\n", songbook.name);
+            if (!new_songbook(home_path))
+                printf("Failed to create specified songbook.\n");
             else 
-                printf("%s successfully removed\n", songbook.name);
+                printf("New songbook created successfully\n");
+        }
+        else if (choice == edit_sb)
+        {
+            Songbook songbook;
+            if (!choose_songbook(home_path, &songbook))
+                printf("Failed to get songbook to edit.\n");
+            else
+                printf("Songbook chosen: %s\n", songbook.name);
+
+            EditSBChoice edit_action = edit_choice();
+
+            Song song;
+            song_ctor(&song);
+
+            if (edit_action == add_song)
+            {
+                if (!get_song(home_path, &song))
+                {
+                    fprintf(stderr, "Failed to get song.\n");
+                    continue;
+                }
+                if (songbook.format == tex)
+                {
+                    if (!add_song_tex(&songbook, &song))
+                    {
+                        fprintf(stderr, "Failed to add %s to %s\n", song.name_utf, songbook.name);
+                        continue;
+                    }
+                }
+            }
+
+            song_dtor(&song);
+
             songbook_dtor(&songbook);
         }
-        else 
+        else if (choice == delete_sb)
         {
-            printf("%s will not be deleted.\n", songbook.name);
-            songbook_dtor(&songbook);
-        }   
+            Songbook songbook;
+            int del_choice = deletion_choice(home_path, &songbook);
+            if (del_choice == -1)
+                printf("Failed to get songbook to delete\n");
+            else if (del_choice == 1)
+            {
+                if (!remove_songbook(&songbook))
+                    printf("Could not delete %s\n", songbook.name);
+                else 
+                    printf("%s successfully removed\n", songbook.name);
+                songbook_dtor(&songbook);
+            }
+            else 
+            {
+                printf("%s will not be deleted.\n", songbook.name);
+                songbook_dtor(&songbook);
+            }   
+        }
+        else
+        {
+            printf("Bye!\n");
+            break;
+        }
     }
 
     /*Song song;

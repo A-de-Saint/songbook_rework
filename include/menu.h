@@ -14,6 +14,12 @@ typedef enum {
     delete_sb
 } ActionChoice;
 
+typedef enum {
+    go_back,
+    add_song,
+    remove_song,
+} EditSBChoice;
+
 int readnum(int min, int max);
 
 ActionChoice action_choice();
@@ -25,5 +31,7 @@ bool choose_songbook(Path *home_path, Songbook *save_to);
 int deletion_choice(Path *home_path, Songbook *save_to);
 
 bool get_song(Path *home_path, Song *save_to);
+
+EditSBChoice edit_choice();
 
 #endif

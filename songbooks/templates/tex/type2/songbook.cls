@@ -47,17 +47,18 @@
     \end{minipage}
     \end{center}
     \par
+    \newpage
 }
 
 % optional enverinments (empty by default) %
 % change at your own risk %
-\newenvironment{song_verse}{}{}
-\newenvironment{song_chorus}{}{}
-\newenvironment{song_intro}{}{}
-\newenvironment{song_ending}{}{}
-\newenvironment{song_interlude}{}{}
-\newenvironment{song_bridge}{}{}
-\newenvironment{song_other}{}{}
+\newenvironment{song_verse}{}{\vspace{\baselineskip}}
+\newenvironment{song_chorus}{}{\vspace{\baselineskip}}
+\newenvironment{song_intro}{}{\vspace{\baselineskip}}
+\newenvironment{song_ending}{}{\vspace{\baselineskip}}
+\newenvironment{song_interlude}{}{\vspace{\baselineskip}}
+\newenvironment{song_bridge}{}{\vspace{\baselineskip}}
+\newenvironment{song_other}{}{\vspace{\baselineskip}}
 
 % commands for chords and lyrics %
 \newcommand{\chord}[1]{%
