@@ -80,7 +80,7 @@ int main(void)
                 {
                     putchar('\n');
                     printf("Quick read successfully read %d songs\n", quick_result);
-                    printf("Unsuccessful attempts:\n");
+                    printf("Unsuccessful attempts: (%u)\n", errors.size);
                     for (unsigned int i = 0; i < errors.size; i++)
                     {
                         printf("%s\n", errors.strings[i]);

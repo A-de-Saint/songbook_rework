@@ -115,7 +115,8 @@ bool create_tex_song(Song *song, char *song_print, Path *tex_path, Type type)
                     if (prev_chord) //put chordlen whitespaces between back-to-back chords
                     {
                         if (curr_part->type == INTRO || curr_part->type == INTERLUDE || curr_part->type == ENDING)
-                            chordlen = 3;
+                            if (chordlen < 3)
+                                chordlen = 3;
                         for (int l = 0; l < chordlen; l++)
                             fprintf(file, "\\ ");
                         chordlen = 0;
@@ -131,9 +132,15 @@ bool create_tex_song(Song *song, char *song_print, Path *tex_path, Type type)
                     prev_chord = true;
                     continue;
                 }
-                if (curr_line[k] == '#')
+                if (curr_line[k] == '\\')
+                {
+                    fprintf(file, "\\textbackslash");
+                    goto after_write;
+                }
+                if (curr_line[k] == '#' || curr_line[k] == '_') //escape chars
                     fputc('\\', file);
                 fputc(curr_line[k], file);
+            after_write:
                 if (reading_chord)
                 {
                     chordlen++;
@@ -227,63 +234,56 @@ int get_font_size_split(SongData *song_data, Type type, int values[2])
     const int rows_constant = 710;
     const float first_to_second_ratio = 1.3;
     const int max_allowed_text_size = 18;
-    const int split_cols_const = 450;
-    const int max_rows_number = 48;
-    const int min_cols_number = 50;
+    int split_cols_const = 470;
     
-    bool split;
-    if (row_count > max_rows_number && max_len <= min_cols_number)
-        split = true;
-    else
-        split = false;
-
-    //count stuff and return the smallest
-    int res1;
-    if (split)
-        res1 = split_cols_const / max_len;
-    else
-        res1 = cols_constant / max_len;
-    if (res1 > max_allowed_text_size)
-        res1 = max_allowed_text_size;
-
-    int res2;
-    if (split)
-        res2 = rows_constant / (row_count / 2);
-    else
-        res2 = rows_constant / row_count;
-    if (res2 > max_allowed_text_size)
-        res2 = max_allowed_text_size;
-
-    if (res1 < res2)
-        values[0] = res1;
-    else 
-        values[0] = res2;
-
-    values[1] = (int)((float)values[0] * first_to_second_ratio);
-
-    //if split, measure after which part should the page split
-    if (split)
+    //this approach calculates both split and no-split and returns what is greater
+    //calculate split stuff
+    unsigned int target = (unsigned)row_count / 2;
+    unsigned int measured = 0;
+    int return_val = -1;
+    int rows_split = row_count;
+    for (unsigned int i = 0; i < song_data->count; i++)
     {
-        unsigned int target = (unsigned)row_count / 2;
-        unsigned int measured = 0;
-        for (unsigned int i = 0; i < song_data->count; i++)
-        {
-            if (type == type1)
-                measured += song_data->parts[i].lines.size * 2 + 1;
-            else
-                measured += (unsigned int)((float)song_data->parts[i].lines.size * 1.5) + 1;
+        if (type == type1)
+            measured += song_data->parts[i].lines.size * 2 + 1;
+        else
+            measured += (unsigned int)((float)song_data->parts[i].lines.size * 1.5) + 1;
 
-            if (measured >= target)
-            {
-                if (i + 1 < song_data->count)
-                    return (int)i+1;
-                else 
-                    return (int)i;
-            }
+        if (measured >= target)
+        {
+            if (i + 1 < song_data->count)
+                return_val = (int)i+1;
+            else 
+                return_val = (int)i;
+            rows_split = (int)measured; //real row_count in case of split
+            break;
         }
     }
 
-    return -1;
+    //calculate maximal possible split font size
+    int split_x_res = split_cols_const / max_len;
+    int split_y_res = rows_constant / rows_split;
+    int split_res = split_x_res < split_y_res ? split_x_res : split_y_res;
+
+    //calculate maximal possible nosplit font size
+    int nosplit_x_res = cols_constant / max_len;
+    int nosplit_y_res = rows_constant / row_count;
+    int nosplit_res = nosplit_x_res < nosplit_y_res ? nosplit_x_res : nosplit_y_res;
+
+    if (nosplit_res >= split_res)
+    {
+        return_val = -1;
+        values[0] = nosplit_res;
+    }
+    else
+        values[0] = split_res;
+
+    if (values[0] > max_allowed_text_size)
+        values[0] = max_allowed_text_size;
+
+    values[1] = (int)((float)values[0] * first_to_second_ratio);
+
+    return return_val;
 }
 
 //adds song to songs.tex (which gets inputted into main.tex)

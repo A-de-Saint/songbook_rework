@@ -19,4 +19,6 @@ char *parse_format(FILE *file);
 
 bool parse_name_author(char *string, char *format, ComesFirst first, char *name, char *author);
 
+void asciize_separator(char *string);
+
 #endif

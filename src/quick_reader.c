@@ -42,6 +42,7 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
         fclose(file);
         return -1;
     }
+    asciize_separator(format);
 
     //get what goes first
     ComesFirst first;
@@ -100,6 +101,7 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
         Path *song_path = song_try_find(name, author, home_path);
         if (song_path != NULL)
         {
+            printf("Found in song_collection\n");
             bool decode_res = decode_song(song_path, &song);
             path_dtor(song_path);
             if (!decode_res)
@@ -224,6 +226,7 @@ char *parse_format(FILE *file)
 //does not check for NULL
 bool parse_name_author(char *string, char *format, ComesFirst first, char *name, char *author)
 {
+    asciize_separator(string);
     if (first == AUTHOR)
     {
         if (sscanf(string, format, author, name) != 2)
@@ -239,4 +242,28 @@ bool parse_name_author(char *string, char *format, ComesFirst first, char *name,
     trim_string(author);
     trim_string(name);
     return true;
+}
+
+//turns weird utf-8 dashes from string into normal '-'
+void asciize_separator(char *string)
+{
+    if (string == NULL)
+        return;
+    
+    int i = 0;
+    int j = 0;
+    while (string[i] != '\0')
+    {
+        //check for E2 80 93 || E2 80 93
+        if ((unsigned char)string[i] == 0xE2 &&
+            (unsigned char)string[i+1] == 0x80 &&
+            ((unsigned char)string[i+2] == 0x93 ||
+            (unsigned char)string[i+2] == 0x94))
+        {
+            string[j++] = '-';
+            i += 3;
+            continue;
+        }
+        string[j++] = string[i++];
+    }
 }
