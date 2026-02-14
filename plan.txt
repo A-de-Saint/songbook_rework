@@ -165,3 +165,14 @@ song formatting (my style)
                 - songs/
                     - [song1].tex
                     - [song2].tex
+
+
+- reading multiple songs
+    - make a queue/queue.txt file in every songbook
+    - while editting a songbook, add an option to add multiple songs
+    - queue.txt will look like this:
+        format: [format] (for example "%[^-]-%s") (in "")
+        name / author (based off what comes first in the format)
+        song
+        song
+        ...

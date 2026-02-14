@@ -325,10 +325,10 @@ EditSBChoice edit_choice()
 {
     putchar('\n');
     printf("\nChoose action to perform upon songbook:\n");
-    printf("[0] Undo\n[1] Add song\n[2] Remove song\n");
+    printf("[0] Undo\n[1] Add song\n[2] Add multiple songs (using queue)\n[3] Remove song\n");
     printf("Your choice: ");
     int choice;
-    while ((choice = readnum(0,2)) == -1)
+    while ((choice = readnum(0,3)) == -1)
         printf("Invalid choice.\n Try again: ");
     return choice;
 }

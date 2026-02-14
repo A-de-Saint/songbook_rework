@@ -18,6 +18,28 @@ bool create_songbook(Songbook *songbook)
     if (mkdir(songbook->path->path, 0755) == -1)
         return false;
 
+    //create queue
+    Path *queue_path = path_copy(songbook->path, false);
+    if (queue_path == NULL)
+        return false;
+    if (!path_add(queue_path, "queue", 'd'))
+    {
+        path_dtor(queue_path);
+        return false;
+    }
+    if (mkdir(queue_path->path, 0755) == -1)
+    {
+        path_dtor(queue_path);
+        return false;
+    }
+    if (path_add(queue_path, "queue.txt", 'f'))
+    {
+        FILE *queue_tmp = fopen(queue_path->path, "w");
+        if (queue_tmp != NULL)
+            fclose(queue_tmp);
+    }
+    path_dtor(queue_path);
+
     //
     //TODO place for setting up format-specific stuff (multiple functions)
     if (songbook->format == tex)

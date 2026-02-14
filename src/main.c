@@ -6,6 +6,7 @@
 #include <curl/curl.h>
 #include "song_manager.h"
 #include "tex_manager.h"
+#include "quick_reader.h"
 
 int main(void)
 {
@@ -66,6 +67,26 @@ int main(void)
                 }
                 putchar('\n');
                 printf("%s by %s successfully added to %s\n", song.name_utf, song.author_utf, songbook.name);
+            }
+            else if (edit_action == add_multiple)
+            {
+                StringArray errors = str_arr_ctor(16);
+                int quick_result = get_multiple_songs(home_path, &songbook, &errors);
+                if (quick_result == -1)
+                {
+                    fprintf(stderr, "Could not perform quick song add upon %s\n", songbook.name);
+                }
+                else 
+                {
+                    putchar('\n');
+                    printf("Quick read successfully read %d songs\n", quick_result);
+                    printf("Unsuccessful attempts:\n");
+                    for (unsigned int i = 0; i < errors.size; i++)
+                    {
+                        printf("%s\n", errors.strings[i]);
+                    }
+                }
+                str_arr_dtor(&errors);
             }
 
         song_edit_end:

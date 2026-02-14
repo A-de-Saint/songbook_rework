@@ -367,6 +367,14 @@ bool parse_part_ak(char *curr_html, char **read_until, SongPart *song_part)
                     continue;
                 }
             }
+
+            //skip &nspb;
+            if (strncmp(curr_html, "&nbsp;", 6) == 0)
+            {
+                curr_html += 6;
+                continue;
+            }
+
             //in this case, a char from the lyrics
             buffer_add(&buffer, curr_html[0]);
             curr_html++;
