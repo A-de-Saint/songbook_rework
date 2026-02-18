@@ -1,10 +1,10 @@
 #include "songbook_manager.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include "util.h"
 #include <string.h>
 #include "remover.h"
 #include "input_reader.h"
+#include "ak_parser.h"
 
 //creates songbook dir and needed files
 bool create_songbook(Songbook *songbook)
@@ -45,6 +45,11 @@ bool create_songbook(Songbook *songbook)
     if (songbook->format == tex)
     {
         if (!songbook_tex_init(songbook))
+            return false;
+    }
+    else if (songbook->format == HTML)
+    {
+        if (!songbook_html_init(songbook))
             return false;
     }
     //
@@ -375,4 +380,248 @@ bool copy_file(Path *copy_from, Path *copy_to)
     fclose(file_w);
 
     return true;
+}
+
+bool songbook_html_init(Songbook *songbook)
+{
+    if (songbook == NULL)
+        return false;
+    if (songbook->path == NULL || songbook->name == NULL)
+        return false;
+
+    //build html folder path
+    Path *html_path = path_copy(songbook->path, false);
+    if (html_path == NULL)
+        return false;
+    if (!path_add(html_path, "html", 'd'))
+    {
+        path_dtor(html_path);
+        return false;
+    }
+
+    //mkdir [songbook]/html/
+    if (mkdir(html_path->path, 0755) == -1)
+    {
+        path_dtor(html_path);
+        return false;
+    }
+
+    //build path toward html/temp and mkdir
+    if (!path_add(html_path, "temp", 'd'))
+    {
+        path_dtor(html_path);
+        return false;
+    }
+    if (mkdir(html_path->path, 0755) == -1)
+    {
+        path_dtor(html_path);
+        return false;
+    }
+    path_dirback(html_path);
+
+    bool res =  html_add_files(html_path, songbook->path, songbook->name, songbook->type);
+    
+    path_dtor(html_path);
+
+    return res;
+
+}
+
+bool html_add_files(Path *html_path, Path *songbook_path, char *songbook_name, Type songbook_type)
+{
+    //make template path
+    Path *template_path = path_copy(songbook_path, false);
+    if (template_path == NULL)
+        return false;
+    path_dirback(template_path); //now at songbooks
+    if (!path_add(template_path, "templates", 'd') ||
+        !path_add(template_path, "html", 'd'))
+    {
+        path_dtor(template_path);
+        return false;
+    }
+
+    //now at songbooks/templates
+    //add [songbook].html
+    Path *path = path_copy(html_path, false);
+    if (path == NULL)
+    {
+        path_dtor(template_path);
+        return false;
+    }
+    if (!path_add(path, songbook_name, 'f') ||
+        !path_add(path, ".html", 's'))
+    {
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+
+    if (!path_add(template_path, "main.html", 'f'))
+    {
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+
+    //add titlepage
+    FILE *template = fopen(template_path->path, "r");
+    if (template == NULL)
+    {
+        fprintf(stderr, "Could not open %s\n", template_path->path);
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+    FILE *html_main = fopen(path->path, "w");
+    if (html_main == NULL)
+    {
+        fprintf(stderr, "Could not open %s\n", path->path);
+        path_dtor(path);
+        path_dtor(template_path);
+        fclose(template);
+        return false;
+    }
+    bool titlepage_res = html_add_titlepage(template, html_main, songbook_name);
+    fclose(template);
+    fclose(html_main);
+    if (!titlepage_res)
+    {
+        fprintf(stderr, "Didn't find title comment in main.html\n");
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+    path_dirback(path); //now at [songbook]/html
+    path_dirback(template_path); //now at templates/html
+
+    //add style
+    if (!path_add(template_path, "style.css", 'f') ||
+        !path_add(path, "style.css", 'f'))
+    {
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+
+    if (!copy_file(template_path, path))
+    {
+        fprintf(stderr, "Could not copy %s\n", template_path->path);
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+    path_dirback(template_path);
+    
+    //determine what to append based on type
+    if (songbook_type == type1)
+    {
+        if (!path_add(template_path, "type1.css", 'f'))
+        {
+            path_dtor(path);
+            path_dtor(template_path);
+            return false;
+        }
+    }
+    else 
+    {
+        if (!path_add(template_path, "type2.css", 'f'))
+        {
+            path_dtor(path);
+            path_dtor(template_path);
+            return false;
+        }
+    }
+
+    FILE *songbook_style = fopen(path->path, "a");
+    if (songbook_style == NULL)
+    {
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+    FILE *type_style = fopen(template_path->path, "r");
+    if (type_style == NULL)
+    {
+        path_dtor(path);
+        path_dtor(template_path);
+        fclose(songbook_style);
+        return false;
+    }
+
+    char *line;
+    while ((line = read_line(type_style)) != NULL)
+    {
+        fprintf(songbook_style, "%s\n", line);
+        free(line);
+    }
+    fclose(songbook_style);
+    fclose(type_style);
+    path_dirback(path);
+    path_dirback(template_path);
+
+    //copy TOC
+    if (!path_add(template_path, "toc.html", 'f') ||
+        !path_add(path, "toc.html", 'f'))
+    {
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+    if (!copy_file(template_path, path))
+    {
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+    path_dirback(template_path);
+    path_dirback(path);
+
+    //add temp utilities
+    if (!path_add(path, "temp", 'd') ||
+        !path_add(path, "fitDocument.js", 'f') ||
+        !path_add(template_path, "fitDocument.js", 'f'))
+    {
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+
+    if (!copy_file(template_path, path))
+    {
+        path_dtor(path);
+        path_dtor(template_path);
+        return false;
+    }
+    path_dtor(template_path);
+    path_dirback(path);
+
+    //'touch' temp.html
+    if (path_add(path, "temp.html", 'f'))
+    {
+        FILE *temp_file = fopen(path->path, "w");
+        if (temp_file != NULL)
+            fclose(temp_file);
+    }
+
+    path_dtor(path);
+    return true;
+}
+
+bool html_add_titlepage(FILE *template, FILE *copy_to, char *songbook_name)
+{
+    char *line;
+    bool didit = false;
+    while ((line = read_line(template)) != NULL)
+    {
+        if (strcmp(line, "<!--title-->") == 0)
+        {
+            fprintf(copy_to, "            <h1 id=\"songbook-title\">%s</h1>\n", songbook_name);
+            didit = true;
+        }
+        else 
+            fprintf(copy_to, "%s\n", line);
+        free(line);
+    }
+    return didit;
 }

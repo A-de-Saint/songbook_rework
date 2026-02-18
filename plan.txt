@@ -176,3 +176,45 @@ song formatting (my style)
         song
         song
         ...
+
+- HTML format
+    - have one main.html file (with basically everything)
+    - have one style.css file (with style and comments for users)
+    - in another file, have:
+        - titlepage.html
+        - toc.html
+        - songs/
+            -individual_songs.html
+    architecture:
+        [songbook]/
+            - html/
+                - main.html
+                - style.css
+                - parts/
+                    - titlepage.html
+                    - toc.html
+                    - songs/
+                        -[songprint].html
+                        -[songprint].html
+                        ...
+
+- HTML formatting crazy idea
+    - to support non-monospace fonts...
+    - create the songs in C
+        - determine if they should split or not
+        - calculate max font-size using height
+        - load longest lines into longest_lines.html
+        - run it using chromium and pipe stdout
+            - js calculates max_fontsize (using vspace (ig))
+            - returns dom (changed)
+            - or perhaps even just the numbers
+        - C prints corrected fontsizes
+        - now songbook.html can be completed
+
+    - in type2, a chord is a <sup class="chord">Chrd</sup>, nothing extra needed
+        -chord gets counted into max-line-length
+
+    - in type1, to avoid chord-collisions, instead of measuring it with js, just put margin-left = (prev_chordlen / 2 + 0.5)em
+        - where prev_chordlen chordlen - (underchord_chars * 0.75)
+        - a chord is <span class="chord" style="margin-left: [num]em" (optional)>
+
