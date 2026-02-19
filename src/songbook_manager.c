@@ -419,6 +419,19 @@ bool songbook_html_init(Songbook *songbook)
     }
     path_dirback(html_path);
 
+    //build path toward html/songs and mkdir
+    if (!path_add(html_path, "songs", 'd'))
+    {
+        path_dtor(html_path);
+        return false;
+    }
+    if (mkdir(html_path->path, 0755) == -1)
+    {
+        path_dtor(html_path);
+        return false;
+    }
+    path_dirback(html_path);
+
     bool res =  html_add_files(html_path, songbook->path, songbook->name, songbook->type);
     
     path_dtor(html_path);

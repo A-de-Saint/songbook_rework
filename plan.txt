@@ -211,9 +211,6 @@ song formatting (my style)
         - C prints corrected fontsizes
         - now songbook.html can be completed
 
-    - in type2, a chord is a <sup class="chord">Chrd</sup>, nothing extra needed
-        -chord gets counted into max-line-length
-
     - in type1, to avoid chord-collisions, instead of measuring it with js, just put margin-left = (prev_chordlen / 2 + 0.5)em
         - where prev_chordlen chordlen - (underchord_chars * 0.75)
         - a chord is <span class="chord" style="margin-left: [num]em" (optional)>

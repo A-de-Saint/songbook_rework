@@ -7,6 +7,7 @@
 #include "song_manager.h"
 #include "tex_manager.h"
 #include "quick_reader.h"
+#include "html_manager.h"
 
 int main(void)
 {
@@ -56,6 +57,14 @@ int main(void)
                     if (!add_song_tex(&songbook, &song))
                     {
                         fprintf(stderr, "Failed to add %s to %s\n", song.name_utf, songbook.name);
+                        goto song_edit_end;
+                    }
+                }
+                else if (songbook.format == HTML)
+                {
+                    if (!add_song_html(&songbook, &song))
+                    {
+                        fprintf(stderr, "Failed to add %s to %s", song.name_utf, songbook.name);
                         goto song_edit_end;
                     }
                 }

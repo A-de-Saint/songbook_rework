@@ -129,3 +129,13 @@
 .split .lyrics {
     width: 80mm;
 }
+/* type-specific stuff */
+/* DO NOT CHANGE */
+.chord {
+    font-weight: bold;
+}
+.lyrics {
+    line-height: 1.3em;
+    white-space: pre;
+    width: 170mm;
+}

@@ -4,6 +4,7 @@
 #include "songbook_manager.h"
 #include "song_manager.h"
 #include <stdbool.h>
+#include "pathwork.h"
 
 bool add_song_tex(Songbook *songbook, Song *song);
 
