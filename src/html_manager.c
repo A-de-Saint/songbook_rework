@@ -1,4 +1,5 @@
 #include "html_manager.h"
+#include <stdlib.h>
 
 //adds a single song to songbook (of format HTML)
 bool add_song_html(Songbook *songbook, Song *song)
@@ -29,6 +30,7 @@ bool add_song_html(Songbook *songbook, Song *song)
 
     bool res = html_add_song(path, song, song_print, songbook->type);
     path_dtor(path);
+    free(song_print);
 
     return res;
 }
