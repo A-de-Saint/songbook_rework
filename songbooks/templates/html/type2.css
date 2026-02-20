@@ -2,13 +2,9 @@
 /* DO NOT CHANGE */
 .chord {
     font-weight: bold;
-    display: inline-block;
-    position: relative;
-    width: 0;
-    bottom: 1em;
 }
 .lyrics {
-    line-height: 2.5em;
+    line-height: 1.3em;
     white-space: pre;
     width: 170mm;
 }

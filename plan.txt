@@ -190,14 +190,24 @@ song formatting (my style)
             - html/
                 - main.html
                 - style.css
-                - parts/
-                    - titlepage.html
-                    - toc.html
+                - toc.html
+                - temp/
+                    - temp.html //for measuring with js
+                    - fitDocument.js
                     - songs/
                         -[songprint].html
                         -[songprint].html
                         ...
+    data movements:
+        - each song gets saved into its file
+        - then untested songs go into temp.html
+        - the program pipes to chromium
+        - saves static info
+        - saves all songs (again, probably) to [songbook].html
 
+
+
+-temp-thoughts:
 - HTML formatting crazy idea
     - to support non-monospace fonts...
     - create the songs in C
@@ -215,3 +225,6 @@ song formatting (my style)
         - where prev_chordlen chordlen - (underchord_chars * 0.75)
         - a chord is <span class="chord" style="margin-left: [num]em" (optional)>
 
+- HTML toc
+    - I've decided that it'd be best if every song had it own id based on song_print
+    - TOC only gets built once, after all of the songs were added

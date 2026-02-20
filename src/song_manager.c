@@ -146,6 +146,42 @@ char *create_song_print(char *song_name, char *author)
     return print;
 }
 
+//creates extended song print of format nameA_authorA\nameU\authorU
+char *create_song_print_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf)
+{
+    if (name_ascii == NULL || name_utf == NULL || author_ascii == NULL || author_utf == NULL)
+        return NULL;
+
+    //+4 for _, \, \, and '\0'
+    size_t total = strlen(name_ascii) + strlen(author_ascii) + strlen(name_utf) + strlen(author_utf) + 4;
+    char *ext_print = malloc(total);
+    if (ext_print == NULL)
+        return NULL;
+    
+    int i = 0;
+    int j = 0;
+    while (name_ascii[i] != '\0')
+        ext_print[j++] = name_ascii[i++];
+    ext_print[j++] = '_';
+    i = 0;
+
+    while (author_ascii[i] != '\0')
+        ext_print[j++] = author_ascii[i++];
+    ext_print[j++] = '\\';
+    i = 0;
+
+    while (name_utf[i] != '\0')
+        ext_print[j++] = name_utf[i++];
+    ext_print[j++] = '\\';
+    i = 0;
+
+    while (author_utf[i] != '\0')
+        ext_print[j++] = author_utf[i++];
+    ext_print[j] = '\0';
+
+    return ext_print;
+}
+
 //allocs name_save and author_save (overwrites if necessary)
 //frees everything if return == false
 bool decode_song_print(char *to_decode, char **name_save, char **author_save)
@@ -171,6 +207,44 @@ bool decode_song_print(char *to_decode, char **name_save, char **author_save)
             free(*name_save);
         if (*author_save != NULL)
             free(*author_save);
+        return false;
+    }
+
+    return true;
+}
+
+//decodes extended sond print into song_print, name_utf, author_utf
+//all of those need to be freed later
+//if return == false, everything freed
+bool decode_song_print_extended(char *to_decode, char **song_print, char **name_utf, char **author_utf)
+{
+    if (to_decode == NULL)
+        return false;
+
+    size_t to_decode_size = strlen(to_decode);
+    *song_print = malloc(to_decode_size);
+    if (*song_print == NULL)
+        return false;
+    *name_utf = malloc(to_decode_size);
+    if (*name_utf == NULL)
+    {
+        free(*song_print);
+        return false;
+    }
+    *author_utf = malloc(to_decode_size);
+    if (*author_utf == NULL)
+    {
+        free(*song_print);
+        free(*name_utf);
+        return false;
+    }
+
+    int res = sscanf(to_decode, "%[^\\]\\%[^\\]\\%[^\n]", *song_print, *name_utf, *author_utf);
+    if (res != 3)
+    {
+        free(*song_print);
+        free(*name_utf);
+        free(*author_utf);
         return false;
     }
 
@@ -819,4 +893,36 @@ bool add_song_songlist(char *author_ascii, char *name_ascii, Path *songbook_path
     free(print);
 
     return result;
+}
+
+//adds song to songlist with extended prints
+bool add_song_songlist_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf, Path *songbook_path)
+{
+    if (name_ascii == NULL || author_ascii == NULL || name_utf == NULL || author_utf == NULL)
+        return false;
+    if (songbook_path == NULL)
+        return false;
+
+    Path *path = path_copy(songbook_path, false);
+    if (path == NULL)
+        return false;
+    if (!path_add(path, "songlist.txt", 'f'))
+    {
+        path_dtor(path);
+        return false;
+    }
+
+    char *print_ext = create_song_print_extended(name_ascii, author_ascii, name_utf, author_utf);
+    if (print_ext == NULL)
+    {
+        path_dtor(path);
+        return false;
+    }
+
+    bool res = read_insert_write(path, print_ext);
+
+    path_dtor(path);
+    free(print_ext);
+
+    return res;
 }

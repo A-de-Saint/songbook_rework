@@ -85,7 +85,9 @@
     list-style: none;
     text-decoration: none;
     padding-left: 0;
-    font-size: 5mm;
+    font-size: 3mm;
+    margin: 0;
+    height: 250mm;
 }
 .toc-pagenumber, .toc-title {
     white-space: nowrap;
@@ -99,8 +101,16 @@
     column-count: 2;
     column-gap: 10mm;
 }
+#toc-first {
+    height: 240mm;
+    margin-top: 1mm;
+}
 #contents-name {
     text-align: center;
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 1.3em;
+    font-size: 6mm;
 }
 
 /* song stuff */

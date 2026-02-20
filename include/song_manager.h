@@ -51,7 +51,11 @@ void song_dtor(Song *song);
 
 char *create_song_print(char *song_name, char *author);
 
+char *create_song_print_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf);
+
 bool decode_song_print(char *to_decode, char **name_save, char **author_save);
+
+bool decode_song_print_extended(char *to_decode, char **song_print, char **name_utf, char **author_utf);
 
 Path *song_try_find(char *song_name, char *author, Path *home_path);
 

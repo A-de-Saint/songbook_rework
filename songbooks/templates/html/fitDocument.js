@@ -6,7 +6,7 @@ window.addEventListener("load", () => {
     }
 });
 
-function fitSong(song, maxSize, minSize) {
+function fitSong(song, minSize, maxSize) {
     let size = maxSize;
     const lines = song.getElementsByClassName("lyrics");
     for (const line of lines) {
@@ -28,6 +28,7 @@ function fitSong(song, maxSize, minSize) {
         }
     }
     song.style.fontSize = size + "px";
+    console.log(size);
     for (const line of lines) {
         line.style.removeProperty("font-size");
     }
