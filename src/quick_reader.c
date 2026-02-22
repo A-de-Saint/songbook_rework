@@ -4,6 +4,8 @@
 #include <string.h>
 #include "ak_parser.h"
 #include "tex_manager.h"
+#include "html_manager.h"
+#include "multiple_songs.h"
 
 //downloads all songs in songbooks queue/queue.txt
 //returns -1 if function failed
@@ -65,6 +67,18 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
         fclose(file);
         free(format);
         return -1;
+    }
+
+    //html-specific
+    SongFiles sf;
+    if (songbook->format == HTML)
+    {
+        if (!song_files_ctor(&sf, 64))
+        {
+            fclose(file);
+            free(format);
+            return -1;
+        }
     }
 
     //now we have format and what comes first
@@ -133,18 +147,65 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
             {
                 fprintf(stderr, "Could not add song to songbook\n");
                 all_okay = false;
-                song_dtor(&song);
-                goto loop_end;
+                goto pre_loop_end;
+            }
+            //add song to songlist.txt of the given songbook
+            if (!add_song_songlist(song.author_ascii, song.name_ascii, songbook->path))
+            {
+                fprintf(stderr, "Song couldn't be added to songlist.txt in %s\n", songbook->name);
+                all_okay = false;
+                goto pre_loop_end;
+            }
+        }
+        else if (songbook->format == HTML)
+        {
+            //already adds to songlist
+            if (!add_song_html(songbook, &song, false))
+            {
+                fprintf(stderr, "Could not add song to songbook\n");
+                all_okay = false;
+                goto pre_loop_end;
+            }
+
+            char *print = create_song_print(song.name_ascii, song.author_ascii);
+            if (print == NULL)
+            {
+                all_okay = false;
+                goto pre_loop_end;
+            }
+            //build path to song and fopen it
+            Path *path = path_copy(songbook->path, false);
+            if (!path_add(path, "html", 'd') ||
+                !path_add(path, "songs", 'd') ||
+                !path_add(path, print, 'f') ||
+                !path_add(path, ".html", 's'))
+            {
+                path_dtor(path);
+                free(print);
+                all_okay = false;
+                goto pre_loop_end;
+            }
+            //open the song
+            FILE *song_file = fopen(path->path, "r");
+            if (song_file == NULL)
+            {
+                fprintf(stderr, "Could not reopen %s\n", print);
+                path_dtor(path);
+                free(print);
+                goto pre_loop_end;
+            }
+
+            bool html_res = song_files_add(&sf, song_file, path);
+            free(print);
+            path_dtor(path);
+            if (!html_res)
+            {
+                all_okay = false;
+                goto pre_loop_end;
             }
         }
 
-        //add song to songlist.txt of the given songbook
-        if (!add_song_songlist(song.author_ascii, song.name_ascii, songbook->path))
-        {
-            fprintf(stderr, "Song couldn't be added to songlist.txt in %s\n", songbook->name);
-            all_okay = false;
-        }
-
+    pre_loop_end:
         song_dtor(&song);
 
     loop_end:
@@ -159,6 +220,42 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
             printf("FAIL\n");
             str_arr_add(unsuccessful, line);
         }
+    }
+
+    //after the loop, HTML needs to do stuff
+    if (songbook->format == HTML)
+    {
+        bool html_res = true;
+        bool main_res = false;
+        bool files_closed = false;
+        //build path to main.html
+        Path *html_path = path_copy(songbook->path, false);
+        if (!path_add(html_path, "html", 'd') ||
+            !path_add(html_path, songbook->name, 'f') ||
+            !path_add(html_path, ".html", 's'))
+        {
+            html_res = false;
+            goto after_html_end;
+        }
+
+        //fix fontsizes
+        printf("\nThe next step might take a while, please be patient...\n");
+        html_res = fix_fontsizes_fclose(&sf, html_path);
+
+        //build main (compile)
+        if (html_res)
+        {
+            files_closed = true;
+            main_res = html_compile(songbook);
+        }
+
+    after_html_end:
+        path_dtor(html_path);
+        song_files_dtor(&sf, !files_closed); //need to negate (obvi)
+        if (!html_res)
+            printf("WARN: songs added, but not with fixed sizes\n");
+        if (!main_res)
+            printf("WARN: everything went good, but main html could not be assembled\n");
     }
 
     free(format);

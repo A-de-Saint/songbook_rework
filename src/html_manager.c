@@ -7,7 +7,8 @@
 
 //adds a single song to songbook (of format HTML)
 //takes care of adding the song to songlist
-bool add_song_html(Songbook *songbook, Song *song)
+//if fix_rightaway = true, pipes to chromium and fixes songsize for just one song
+bool add_song_html(Songbook *songbook, Song *song, bool fix_rightaway)
 {
     if (songbook == NULL || song == NULL)
         return false;
@@ -43,7 +44,7 @@ bool add_song_html(Songbook *songbook, Song *song)
     }
 
     //measure song fontsize
-    if (res)
+    if (res && fix_rightaway)
     {
         if (!path_add(path, "songs", 'd') ||
             !path_add(path, song_print, 'f') ||
@@ -75,24 +76,21 @@ bool add_song_html(Songbook *songbook, Song *song)
             !path_add(main_path, ".html", 's'))
         {
             res = false;
-            song_files_dtor(&sf);
+            song_files_dtor(&sf, true);
             path_dtor(main_path);
-            fclose(song);
             goto add_end;
         }
 
         res = fix_fontsizes_fclose(&sf, main_path);
         path_dtor(main_path);
-        printf("Did it return early? Fuck...\n"); //testing//
         if (!res)
             fclose(song);
-        song_files_dtor(&sf);
+        song_files_dtor(&sf, false);
     }
 
 add_end:
     path_dtor(path);
     free(song_print);
-    printf("got here?\n"); //testing//
 
     return res;
 }
@@ -112,7 +110,6 @@ bool html_add_song(Path *html_path, Song *song, char *song_print, Type type)
         path_dtor(path);
         return false;
     }
-    printf("%s\n", path->path); //testing//
 
     FILE *file = fopen(path->path, "w");
     if (file == NULL)
@@ -238,7 +235,7 @@ bool html_add_song(Path *html_path, Song *song, char *song_print, Type type)
 //does not check for NULL
 bool get_horizontal_fontsize_split(SongData *data, Type type, float *max_size)
 {
-    float line_height = 1.3;
+    float line_height = 1.5;
     float break_height = 1.3;
     if (type == type1)
         line_height = 2.5;
@@ -249,13 +246,8 @@ bool get_horizontal_fontsize_split(SongData *data, Type type, float *max_size)
         current_height += (float)(data->parts[i].lines.size) * line_height + break_height;
     }
 
-    float mm_height = 245.0;
-    float min_text_size = 5.0;
-
-    if (type == type1)
-        line_height = 2.5;
-    else
-        line_height = 1.3;
+    float mm_height = 240.0;
+    float min_text_size = 2.8;
 
     //determine whether to split or not
     bool split = false;
@@ -401,7 +393,6 @@ int build_toc_html(FILE *toc, FILE *songlist)
 //temp is based off main for some fonts
 bool add_songs_to_temp(SongFiles *song_files, FILE *temp, FILE *main)
 {
-    printf("I got here at least\n"); //testing//
     if (song_files == NULL || temp == NULL || song_files->songs == NULL)
         return false;
 
@@ -449,7 +440,6 @@ bool add_songs_to_temp(SongFiles *song_files, FILE *temp, FILE *main)
 //returns floats in results - MUST BE ALLOCATED BEFORE
 int get_temp_results(Path *temp_path, float *results, int results_count)
 {
-    printf("Did get here\n"); //testing//
     FILE *DOM = NULL;
 
     #ifdef _WIN32
@@ -458,7 +448,7 @@ int get_temp_results(Path *temp_path, float *results, int results_count)
         //TODO support more commands (chromium, chrome...)
         const char *command_names[] = {"google-chrome ", "chromium ", "chromium-browser "};
         int command_count = 3;
-        const char *flags = "--headless=new --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=15000 --run-all-compositor-stages-before-draw ";
+        const char *flags = "--headless=new --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=25000 --run-all-compositor-stages-before-draw ";
         const char *silence = " 2>/dev/null";
         char *command = malloc(32 + strlen(flags) + strlen(temp_path->path) + strlen(silence) + 1); //32 represents command_name limit
         if (command == NULL)
@@ -539,18 +529,15 @@ int get_temp_results(Path *temp_path, float *results, int results_count)
 //songs WILL NOT be closed if false
 bool fix_fontsizes_fclose(SongFiles *songs, Path *main_path)
 {
-    printf("Fixing fontsizes...\n");
+    printf("\nFixing fontsizes...\n");
     if (songs == NULL || main_path == NULL)
         return false;
 
-    printf("here???\n"); //testing//
-    printf("%s\n", main_path->path);
     //open main
     FILE *main = fopen(main_path->path, "r");
     if (main == NULL)
         return false;
 
-    printf("here\n"); //testing//
 
     //open temp
     Path *path = path_copy(main_path, false);
@@ -567,7 +554,6 @@ bool fix_fontsizes_fclose(SongFiles *songs, Path *main_path)
         path_dtor(path);
         return false;
     }
-    printf("here\n"); //testing//
     FILE *temp = fopen(path->path, "w");
     if (temp == NULL)
     {
@@ -576,13 +562,9 @@ bool fix_fontsizes_fclose(SongFiles *songs, Path *main_path)
         return false;
     }
 
-    printf("Here as well\n"); //testing//
-
     bool res = add_songs_to_temp(songs, temp, main);
     fclose(main);
     fclose(temp);
-
-    printf("surely not here tho\n"); //testing//
 
     if (!res)
     {
@@ -935,8 +917,6 @@ bool html_compile(Songbook *songbook)
     int firstpage = build_toc_html(toc, songlist);
     fclose(toc);
     fclose(songlist);
-
-    printf("toc added\n"); //testing//
 
     if (firstpage == -1)
     {

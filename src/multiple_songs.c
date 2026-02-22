@@ -60,14 +60,24 @@ bool song_files_add(SongFiles *song_files, FILE *file, Path *path)
 }
 
 //frees song_files' FILE array and path array
-//does NOT fclose FILEs
-void song_files_dtor(SongFiles *song_files)
+void song_files_dtor(SongFiles *song_files, bool close_files)
 {
     if (song_files == NULL)
         return;
+    
+    if (close_files)
+    {
+        for (unsigned int i = 0; i < song_files->count; i++)
+        {
+            if (song_files->songs[i] != NULL)
+                fclose(song_files->songs[i]);
+        }
+    }
+
     if (song_files->songs != NULL)
         free(song_files->songs);
     song_files->songs = NULL;
+
     if (song_files->paths != NULL)
     {
         for (unsigned int i = 0; i < song_files->count; i++)

@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include "multiple_songs.h"
 
-bool add_song_html(Songbook *songbook, Song *song);
+bool add_song_html(Songbook *songbook, Song *song, bool fix_rightaway);
 
 bool html_add_song(Path *html_path, Song *song, char *song_print, Type type);
 

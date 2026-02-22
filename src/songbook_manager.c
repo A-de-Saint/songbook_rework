@@ -243,17 +243,17 @@ bool songbook_tex_init(Songbook *songbook)
         return false;
     }
 
-    //build path to templates/tex/type/
+    //build path to .templates/tex/type/
     Path *template_path = path_copy(songbook->path, false);
     path_dirback(template_path); //now at home_p/songbooks
-    if (!path_add(template_path, "templates", 'd') ||
+    if (!path_add(template_path, ".templates", 'd') ||
         !path_add(template_path, "tex", 'd'))
     {
         path_dtor(template_path);
         path_dtor(tex_path);
         return false;
     }
-    //now at songbooks/templates/tex
+    //now at songbooks/.templates/tex
     if (songbook->type == type1)
     {
         if (!path_add(template_path, "type1", 'd'))
@@ -295,13 +295,13 @@ bool tex_add_maintex(Path *tex_path, char *songbook_name)
     if (songbook_name == NULL || tex_path == NULL || tex_path->path == NULL)
         return false;
     
-    //create path to templates/tex/main.tex and open file
+    //create path to .templates/tex/main.tex and open file
     Path *template_path = path_copy(tex_path, false);
     if (template_path == NULL)
         return false;
     path_dirback(template_path); //now at songbooks/songbook_name
     path_dirback(template_path); //now at songbooks
-    if (!path_add(template_path, "templates", 'd') ||
+    if (!path_add(template_path, ".templates", 'd') ||
         !path_add(template_path, "tex", 'd') ||
         !path_add(template_path, "main.tex", 'f'))
     {
@@ -447,14 +447,14 @@ bool html_add_files(Path *html_path, Path *songbook_path, char *songbook_name, T
     if (template_path == NULL)
         return false;
     path_dirback(template_path); //now at songbooks
-    if (!path_add(template_path, "templates", 'd') ||
+    if (!path_add(template_path, ".templates", 'd') ||
         !path_add(template_path, "html", 'd'))
     {
         path_dtor(template_path);
         return false;
     }
 
-    //now at songbooks/templates
+    //now at songbooks/.templates
     //add [songbook].html
     Path *path = path_copy(html_path, false);
     if (path == NULL)
@@ -500,13 +500,13 @@ bool html_add_files(Path *html_path, Path *songbook_path, char *songbook_name, T
     fclose(html_main);
     if (!titlepage_res)
     {
-        fprintf(stderr, "Didn't find title comment in main.html in templates\n");
+        fprintf(stderr, "Didn't find title comment in main.html in .templates\n");
         path_dtor(path);
         path_dtor(template_path);
         return false;
     }
     path_dirback(path); //now at [songbook]/html
-    path_dirback(template_path); //now at templates/html
+    path_dirback(template_path); //now at .templates/html
 
     //add style
     if (!path_add(template_path, "style.css", 'f') ||
@@ -630,7 +630,7 @@ bool html_add_titlepage(FILE *template, FILE *copy_to, char *songbook_name)
     {
         if (!title && strstr(line, "<title>") != NULL)
         {
-            fprintf(copy_to, "<title>%s</title>\n", songbook_name);
+            fprintf(copy_to, "    <title>%s</title>\n", songbook_name);
             title = true;
         }
         else if (!didit && strcmp(line, "<!--title-->") == 0)

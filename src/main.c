@@ -72,7 +72,7 @@ int main(void)
                 else if (songbook.format == HTML)
                 {
                     //songlist add is handled within here
-                    if (!add_song_html(&songbook, &song))
+                    if (!add_song_html(&songbook, &song, true))
                     {
                         fprintf(stderr, "Failed to add %s to %s", song.name_utf, songbook.name);
                         goto song_edit_end;

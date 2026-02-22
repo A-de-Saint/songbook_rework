@@ -20,7 +20,7 @@ bool song_files_resize(SongFiles *sf);
 
 bool song_files_add(SongFiles *song_files, FILE *file, Path *path);
 
-void song_files_dtor(SongFiles *song_files);
+void song_files_dtor(SongFiles *song_files, bool close_files);
 
 void reset_files(SongFiles *song_files);
 
