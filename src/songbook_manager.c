@@ -500,7 +500,7 @@ bool html_add_files(Path *html_path, Path *songbook_path, char *songbook_name, T
     fclose(html_main);
     if (!titlepage_res)
     {
-        fprintf(stderr, "Didn't find title comment in main.html\n");
+        fprintf(stderr, "Didn't find title comment in main.html in templates\n");
         path_dtor(path);
         path_dtor(template_path);
         return false;
@@ -625,9 +625,15 @@ bool html_add_titlepage(FILE *template, FILE *copy_to, char *songbook_name)
 {
     char *line;
     bool didit = false;
+    bool title = false;
     while ((line = read_line(template)) != NULL)
     {
-        if (strcmp(line, "<!--title-->") == 0)
+        if (!title && strstr(line, "<title>") != NULL)
+        {
+            fprintf(copy_to, "<title>%s</title>\n", songbook_name);
+            title = true;
+        }
+        else if (!didit && strcmp(line, "<!--title-->") == 0)
         {
             fprintf(copy_to, "            <h1 id=\"songbook-title\">%s</h1>\n", songbook_name);
             didit = true;

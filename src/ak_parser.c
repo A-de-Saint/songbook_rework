@@ -106,9 +106,12 @@ bool parse_name_author_desc_ak(char *html, Song *song, char **description, char 
         }
         else
         {
-            s_read_until(curr_string, "content=\"", &curr_string);
-            strncpy(*description, curr_string, 99);
-            (*description)[99] = '\0';
+            idx = s_read_until(curr_string, "content=\"", &curr_string);
+            if (idx != -1)
+            {
+                strncpy(*description, curr_string, 99);
+                (*description)[99] = '\0';
+            }
         }
     }
 

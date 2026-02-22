@@ -33,7 +33,10 @@ int main(void)
         {
             Songbook songbook;
             if (!choose_songbook(home_path, &songbook))
+            {
                 printf("Failed to get songbook to edit.\n");
+                continue;
+            }
             else
                 printf("Songbook chosen: %s\n", songbook.name);
 
@@ -59,21 +62,28 @@ int main(void)
                         fprintf(stderr, "Failed to add %s to %s\n", song.name_utf, songbook.name);
                         goto song_edit_end;
                     }
+                    //add song to songlist
+                    if (!add_song_songlist(song.author_ascii, song.name_ascii, songbook.path))
+                    {
+                        fprintf(stderr, "Song couldn't be added to songlist.txt in %s\n", songbook.name);
+                        goto song_edit_end;
+                    }
                 }
                 else if (songbook.format == HTML)
                 {
+                    //songlist add is handled within here
                     if (!add_song_html(&songbook, &song))
                     {
                         fprintf(stderr, "Failed to add %s to %s", song.name_utf, songbook.name);
                         goto song_edit_end;
                     }
+                    if (!html_compile(&songbook))
+                    {
+                        fprintf(stderr, "Failed to 'compile' %s.html. Song was added\n", songbook.name);
+                        goto song_edit_end;
+                    }
                 }
 
-                //add song to songlist
-                if (!add_song_songlist(song.author_ascii, song.name_ascii, songbook.path))
-                {
-                    fprintf(stderr, "Song couldn't be added to songlist.txt in %s\n", songbook.name);
-                }
                 putchar('\n');
                 printf("%s by %s successfully added to %s\n", song.name_utf, song.author_utf, songbook.name);
             }

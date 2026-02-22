@@ -134,6 +134,7 @@ bool new_songbook(Path *home_path)
 }
 
 //chooses songbook, returns true if well done, saves to save_to Songbook
+//nothing gets allocated if return = false
 bool choose_songbook(Path *home_path, Songbook *save_to)
 {
     //get path to songbook_list.txt

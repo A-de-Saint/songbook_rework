@@ -80,6 +80,7 @@ char *read_line(FILE *file)
     return buffer.string;
 }
 
+//reads until sequence in file (including sequence)
 bool read_until(FILE *file, char *sequence)
 {
     if (file == NULL || sequence == NULL)
@@ -128,6 +129,8 @@ bool read_until(FILE *file, char *sequence)
         }
         c_buff.start_idx = (c_buff.start_idx + 1) % c_buff.length;
     }
+
+    return false;
 }
 
 CircBuff circ_buff_ctor(unsigned int size)
