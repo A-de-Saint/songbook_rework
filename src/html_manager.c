@@ -156,7 +156,7 @@ bool html_add_song(Path *html_path, Song *song, char *song_print, Type type)
 
             int prev_chordlen = 0;
             int underchord_chars = 0;
-            int temp = 0;
+            float temp = 0.0;
             bool reading_chord = false;
             bool prev_chord = false;
 
@@ -176,9 +176,9 @@ bool html_add_song(Path *html_path, Song *song, char *song_print, Type type)
                         if (offset > 0)
                             fprintf(file, " style=\"margin-left: %fem\"", offset);
                     }
-                    else if (prev_chord)
-                        fprintf(file, "  ");
                     fputc('>', file);
+                    if (prev_chord && type == type2)
+                        fprintf(file, "  ");
                     reading_chord = true;
                     prev_chordlen = 0;
                     continue;
@@ -191,7 +191,7 @@ bool html_add_song(Path *html_path, Song *song, char *song_print, Type type)
                     else
                         fprintf(file, "sup>");
                     reading_chord = false;
-                    temp = prev_chordlen;
+                    temp = (float)prev_chordlen;
                     prev_chord = true;
                     continue;
                 }
@@ -204,7 +204,7 @@ bool html_add_song(Path *html_path, Song *song, char *song_print, Type type)
                     prev_chord = false;
                     if (temp > 0)
                     {
-                        temp--;
+                        temp -= 0.75;
                         underchord_chars++;
                     }
                     else
