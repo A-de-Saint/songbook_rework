@@ -1,3 +1,21 @@
+/* FONT CHANGE */
+/* after changing, run TODO */
+#songbook-title {
+    font-family: Arial, Helvetica, sans-serif;
+}
+#songbook-author {
+    font-family: Arial, Helvetica, sans-serif;
+}
+.toc {
+    font-family: Arial, Helvetica, sans-serif;
+}
+.song-part {
+    font-family: Arial, Helvetica, sans-serif;
+}
+.song-name {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 /* Stuff to ensure smooth PDF printing */
 /* DO NOT CHANGE */
 @media print {
@@ -55,21 +73,6 @@
     font-size: 2rem;
     display: flex;
     justify-content: center;
-}
-
-/* FONT CHANGE */
-/* after changing, run TODO */
-#songbook-title {
-    font-family: Arial, Helvetica, sans-serif;
-}
-#songbook-author {
-    font-family: Arial, Helvetica, sans-serif;
-}
-.toc {
-    font-family: Arial, Helvetica, sans-serif;
-}
-.song-part {
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 /* table of contents */
