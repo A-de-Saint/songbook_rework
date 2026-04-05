@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const int chart_size = 12;
+const char *trans_chart[] = {"A", "A#", "H", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+
 //transposes song into desired first chord
 bool transpose_song(Song *song, char *transpose_to)
 {
@@ -19,9 +22,9 @@ bool transpose_song(Song *song, char *transpose_to)
             char *curr_line = curr_part->lines.strings[j];
 
             //main part of a chord ("F#" from "F#misus2add9")
-            char chord_main_part[8];
+            char chord_main_part[8] = {'\0'};
             //rest of the chord ("misus2add9" from "F#misus2add9")
-            char chord_rest[16];
+            char chord_rest[16] = {'\0'};
             //allocated buffer for transposed line
             char *repl_line = malloc(strlen(curr_line) + 32);
 
@@ -65,13 +68,14 @@ bool transpose_song(Song *song, char *transpose_to)
                             return false;
                         }
                         put_chord(repl_line, &repl_line_curs, chord_main_part, chord_rest);
-                        repl_line[repl_line_curs] = ']';
+                        repl_line[repl_line_curs++] = ']';
                         rest_curs = 0;
                         chord_read = -1;
                     }
                     else if (chord_read == 0)
                     {
                         chord_main_part[0] = curr_line[curr_line_curs];
+                        chord_main_part[1] = '\0';
                         chord_read++;
                     }
                     else if (chord_read == 1)
@@ -82,7 +86,7 @@ bool transpose_song(Song *song, char *transpose_to)
                             chord_main_part[2] = '\0';
                         }
                         else 
-                            chord_main_part[1] = '\0';
+                            chord_rest[rest_curs++] = curr_line[curr_line_curs];
                         chord_read++;
                     }
                     else
@@ -135,11 +139,13 @@ void put_chord(char *repl_line, int *cursor, char *main_part, char *rest)
 {
     for (int i = 0; main_part[i] != '\0'; i++)
     {
-        repl_line[*cursor++] = main_part[i];
+        repl_line[*cursor] = main_part[i];
+        (*cursor)++;
     }
     for (int i = 0; rest[i] != '\0'; i++)
     {
-        repl_line[*cursor++] = rest[i];
+        repl_line[*cursor] = rest[i];
+        (*cursor)++;
     }
 }
 

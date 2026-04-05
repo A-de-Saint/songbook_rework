@@ -45,10 +45,11 @@ ActionChoice action_choice()
     printf("[1] Add new songbook\n");
     printf("[2] Edit songs in an existing songbook\n");
     printf("[3] Remove songbook\n");
+    printf("[4] Add song to global song_collection (transposition possible)\n");
     printf("Your choice: ");
 
     int choice;
-    while ((choice = readnum(0, 3)) == -1)
+    while ((choice = readnum(0, 4)) == -1)
         printf("Invalid input.\nTry again: ");
 
     return choice;

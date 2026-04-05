@@ -11,7 +11,8 @@ typedef enum {
     exit_program,
     new_sb,
     edit_sb,
-    delete_sb
+    delete_sb,
+    add_transpose
 } ActionChoice;
 
 typedef enum {

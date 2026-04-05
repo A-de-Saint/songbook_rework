@@ -8,6 +8,7 @@
 #include "tex_manager.h"
 #include "quick_reader.h"
 #include "html_manager.h"
+#include "transpose.h"
 
 int main(void)
 {
@@ -132,6 +133,38 @@ int main(void)
                 printf("%s will not be deleted.\n", songbook.name);
                 songbook_dtor(&songbook);
             }   
+        }
+        else if (choice == add_transpose)
+        {
+            Song song;
+            song_ctor(&song);
+            //get a song
+            if (!get_song(home_path, &song))
+            {
+                fprintf(stderr, "Failed to get song.\n");
+                goto add_trans_end;
+            }
+
+            printf("\nTranspose to (starting chord): ");
+            char *trans_chord = read_line(stdin);
+            if (trans_chord == NULL)
+            {
+                fprintf(stderr, "Invalid chord.\n");
+                goto add_trans_end;
+            }
+
+            bool trans_res = transpose_song(&song, trans_chord);
+            if (trans_res)
+                trans_res = add_song_songcollection(home_path, &song);
+            if (!trans_res)
+                fprintf(stderr, "Transposition failed.\n");
+            else
+                printf("Song transposed and saved successfully\n");
+
+            free(trans_chord);
+        add_trans_end:
+            song_dtor(&song);
+            continue;
         }
         else
         {
