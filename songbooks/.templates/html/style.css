@@ -15,6 +15,9 @@
 .song-name {
     font-family: Arial, Helvetica, sans-serif;
 }
+#contents-name {
+    font-family: Arial, Helvetica, sans-serif;
+}
 
 /* Stuff to ensure smooth PDF printing */
 /* DO NOT CHANGE */

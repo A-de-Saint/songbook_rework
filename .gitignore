@@ -8,3 +8,5 @@ unused
 *.log
 *.pdf
 test_folder
+songbooks/*
+!songbooks/.templates
