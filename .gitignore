@@ -10,3 +10,4 @@ unused
 test_folder
 songbooks/*
 !songbooks/.templates
+vgcore*

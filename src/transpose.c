@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 const int chart_size = 12;
-const char *trans_chart[] = {"A", "A#", "H", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+const char *trans_chart[] = {"A", "B", "H", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
 
 //transposes song into desired first chord
 bool transpose_song(Song *song, char *transpose_to)
@@ -49,7 +49,7 @@ bool transpose_song(Song *song, char *transpose_to)
                 }
                 else
                 {
-                    if (curr_line[curr_line_curs] == ']')
+                    if (curr_line[curr_line_curs] == ']' || curr_line[curr_line_curs] == '/')
                     {
                         //if first chord, get transposition index first
                         if (!trans_idx_acq)
@@ -68,9 +68,12 @@ bool transpose_song(Song *song, char *transpose_to)
                             return false;
                         }
                         put_chord(repl_line, &repl_line_curs, chord_main_part, chord_rest);
-                        repl_line[repl_line_curs++] = ']';
                         rest_curs = 0;
-                        chord_read = -1;
+                        repl_line[repl_line_curs++] = curr_line[curr_line_curs];
+                        if (curr_line[curr_line_curs] == '/')
+                            chord_read = 0;
+                        else
+                            chord_read = -1;
                     }
                     else if (chord_read == 0)
                     {
@@ -131,6 +134,7 @@ bool get_trans_idx(char *first_chord, char *transpose_to, int *trans_idx)
     }
 
     *trans_idx = transposition_idx - start_chord_idx;
+    printf("Idx is: %d\n", *trans_idx);
     return true;
 }
 
@@ -152,6 +156,7 @@ void put_chord(char *repl_line, int *cursor, char *main_part, char *rest)
 //transposes a single chord
 bool transpose_chord(char *chord, int trans_idx)
 {
+    printf("Transposing this chord: %s\n", chord);
     int chord_idx = -1;
     for (int i = 0; i < chart_size; i++)
     {
@@ -163,7 +168,8 @@ bool transpose_chord(char *chord, int trans_idx)
         fprintf(stderr, "Transposition failed: Unsupported chord: %s\n", chord);
         return false;
     }
-    int new_idx = (chord_idx + trans_idx) % chart_size;
+    int new_idx = ((chord_idx + trans_idx) + chart_size) % chart_size;
+    printf("New_idx is: %d\n", new_idx);
     strcpy(chord, trans_chart[new_idx]);
     return true;
 }
