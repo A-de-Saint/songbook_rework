@@ -44,6 +44,7 @@ chci-ti-rict_mig-21
 chovejte-me-ma-maticko_lidove-pisne
 chybis-mi_tomas-klus
 chytili-jsme-lososa_lidove-pisne
+cizecku-cizecku_lidove-pisne
 co-jste-hasici_lidove-pisne
 co-z-tebe-bude_pokac
 colorado_kabat
@@ -74,6 +75,7 @@ globalni-oteplovani_nightwork
 gronska-pisnicka_jaromir-nohavica
 hallelujah_leonard-cohen
 hej-sokoly_imt-smile
+hello_adele
 hey-jude_the-beatles
 hlavne-ze-jsme-na-vzduchu_jaroslav-uhlir-zdenek-sverak
 hleda-se-zena_mandrage

@@ -17,7 +17,7 @@ int main(void)
 
     Path *home_path = path_ctor(".");
 
-    printf("---SONGBOOK---\nA program made for automatically creating songbooks\n");
+    printf(COLOR_CYAN"---SONGBOOK---\nA program made for automatically creating songbooks\n"COLOR_RESET);
 
     while(true)
     {
@@ -26,20 +26,20 @@ int main(void)
         if (choice == new_sb)
         {
             if (!new_songbook(home_path))
-                printf("Failed to create specified songbook.\n");
+                printf(COLOR_RED"Failed to create specified songbook.\n"COLOR_RESET);
             else 
-                printf("New songbook created successfully\n");
+                printf(COLOR_GREEN"New songbook created successfully\n"COLOR_RESET);
         }
         else if (choice == edit_sb)
         {
             Songbook songbook;
             if (!choose_songbook(home_path, &songbook))
             {
-                printf("Failed to get songbook to edit.\n");
+                printf(COLOR_RED"Failed to get songbook to edit.\n"COLOR_RESET);
                 continue;
             }
             else
-                printf("Songbook chosen: %s\n", songbook.name);
+                printf(COLOR_CYAN"Songbook chosen: %s\n"COLOR_RESET, songbook.name);
 
             EditSBChoice edit_action = edit_choice();
 
@@ -86,7 +86,7 @@ int main(void)
                 }
 
                 putchar('\n');
-                printf("%s by %s successfully added to %s\n", song.name_utf, song.author_utf, songbook.name);
+                printf(COLOR_GREEN"%s by %s successfully added to %s\n"COLOR_RESET, song.name_utf, song.author_utf, songbook.name);
             }
             else if (edit_action == add_multiple)
             {
@@ -99,11 +99,11 @@ int main(void)
                 else 
                 {
                     putchar('\n');
-                    printf("Quick read successfully read %d songs\n", quick_result);
-                    printf("Unsuccessful attempts: (%u)\n", errors.size);
+                    printf(COLOR_GREEN"Quick read successfully read %d songs\n"COLOR_RESET, quick_result);
+                    printf(COLOR_YELLOW"Unsuccessful attempts: (%u)\n"COLOR_RESET, errors.size);
                     for (unsigned int i = 0; i < errors.size; i++)
                     {
-                        printf("%s\n", errors.strings[i]);
+                        printf(COLOR_RED"%s\n"COLOR_RESET, errors.strings[i]);
                     }
                 }
                 str_arr_dtor(&errors);
@@ -119,18 +119,18 @@ int main(void)
             Songbook songbook;
             int del_choice = deletion_choice(home_path, &songbook);
             if (del_choice == -1)
-                printf("Failed to get songbook to delete\n");
+                printf(COLOR_RED"Failed to get songbook to delete\n"COLOR_RESET);
             else if (del_choice == 1)
             {
                 if (!remove_songbook(&songbook))
-                    printf("Could not delete %s\n", songbook.name);
+                    printf(COLOR_RED"Could not delete %s\n"COLOR_RESET, songbook.name);
                 else 
-                    printf("%s successfully removed\n", songbook.name);
+                    printf(COLOR_GREEN"%s successfully removed\n"COLOR_RESET, songbook.name);
                 songbook_dtor(&songbook);
             }
             else 
             {
-                printf("%s will not be deleted.\n", songbook.name);
+                printf(COLOR_YELLOW"%s will not be deleted.\n"COLOR_YELLOW, songbook.name);
                 songbook_dtor(&songbook);
             }   
         }
@@ -158,9 +158,9 @@ int main(void)
             if (trans_res)
                 trans_res = add_song_songcollection(home_path, &song);
             if (!trans_res)
-                fprintf(stderr, "Transposition failed.\n");
+                printf(COLOR_RED"Transposition failed.\n"COLOR_RESET);
             else
-                printf("Song transposed and saved successfully\n");
+                printf(COLOR_GREEN"Song transposed and saved successfully\n"COLOR_RESET);
 
             free(trans_chord);
         add_trans_end:
@@ -169,7 +169,7 @@ int main(void)
         }
         else
         {
-            printf("\nBye!\n");
+            printf(COLOR_CYAN"\nBye!\n"COLOR_RESET);
             break;
         }
     }

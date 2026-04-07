@@ -39,18 +39,18 @@ int readnum(int min, int max)
 ActionChoice action_choice()
 {
     putchar('\n');
-    printf("Choose action you wish to do:\n");
+    printf(COLOR_CYAN"Choose action you wish to do:\n"COLOR_RESET);
 
     printf("[0] Exit program\n");
     printf("[1] Add new songbook\n");
     printf("[2] Edit songs in an existing songbook\n");
     printf("[3] Remove songbook\n");
     printf("[4] Add song to global song_collection (transposition possible)\n");
-    printf("Your choice: ");
+    printf(COLOR_CYAN"Your choice: "COLOR_RESET);
 
     int choice;
     while ((choice = readnum(0, 4)) == -1)
-        printf("Invalid input.\nTry again: ");
+        printf(COLOR_RED"Invalid input.\nTry again: "COLOR_RESET);
 
     return choice;
 }
@@ -58,12 +58,12 @@ ActionChoice action_choice()
 bool new_songbook(Path *home_path)
 {
     putchar('\n');
-    printf("NEW SONGBOOK\n");
+    printf(COLOR_CYAN"NEW SONGBOOK\n"COLOR_RESET);
 
     Songbook songbook;
 
     //create path
-    printf("Choose name: ");
+    printf(COLOR_CYAN"Choose name: "COLOR_RESET);
     char c;
     char *name = read_line(stdin);
     if (name == NULL)
@@ -73,10 +73,10 @@ bool new_songbook(Path *home_path)
     while ((c = check_name(name)) != '\0' || name[0] == '\0')
     {
         if (c != '\0')
-            printf("Name contains invalid characted '%c'\n", c);
+            printf(COLOR_RED"Name contains invalid characted '%c'\n"COLOR_RESET, c);
         else
-            printf("Name cannot be empty\n");
-        printf("Try again: ");
+            printf(COLOR_RED"Name cannot be empty\n"COLOR_RESET);
+        printf(COLOR_CYAN"Try again: "COLOR_RESET);
         name = read_line(stdin);
         if (name == NULL)
             return false;
@@ -100,23 +100,23 @@ bool new_songbook(Path *home_path)
     songbook.path = path;
 
     putchar('\n');
-    printf("Choose mode:\n");
+    printf(COLOR_CYAN"Choose mode:\n"COLOR_RESET);
     printf("[1] Above-text chords\n");
     printf("[2] In-text chords (top-index)\n");
-    printf("Your choice: ");
+    printf(COLOR_CYAN"Your choice: "COLOR_RESET);
     int choice;
     while ((choice = readnum(1, 2)) == -1)
-        printf("Invalid choice\nTry again: ");
+        printf(COLOR_RED"Invalid choice\nTry again: "COLOR_RESET);
     songbook.type = choice;
     
     putchar('\n');
-    printf("Choose songbook format:\n");
+    printf(COLOR_CYAN"Choose songbook format:\n"COLOR_RESET);
     printf("[1] LaTeX (PDF)\n");
     printf("[2] HTML\n");
     printf("[3] .docx\n");
-    printf("Your choice: ");
+    printf(COLOR_CYAN"Your choice: "COLOR_RESET);
     while ((choice = readnum(1,3)) == -1)
-        printf("Invalid choice\nTry again: ");
+        printf(COLOR_RED"Invalid choice\nTry again: "COLOR_RESET);
     songbook.format = choice;
 
     //create specified songbook
@@ -164,7 +164,7 @@ bool choose_songbook(Path *home_path, Songbook *save_to)
     int i = 0;
     char *string;
     putchar('\n');
-    printf("Choose songbook:\n");
+    printf(COLOR_CYAN"Choose songbook:\n"COLOR_RESET);
     while ((string = read_line(file)) != NULL)
     {
         if (string[0] == '\0')
@@ -194,16 +194,16 @@ bool choose_songbook(Path *home_path, Songbook *save_to)
     //check for 'no songbooks yet' option
     if (str_arr.size == 0)
     {
-        printf("You have no existing songbooks\n");
+        printf(COLOR_RED"You have no existing songbooks\n"COLOR_RESET);
         str_arr_dtor(&str_arr);
         return false;
     }
 
     //get user choice
-    printf("Your choice: ");
+    printf(COLOR_CYAN"Your choice: "COLOR_RESET);
     int choice;
     while ((choice = readnum(1, (int)str_arr.size)) == -1)
-        printf("Invalid choice.\nTry again: ");
+        printf(COLOR_RED"Invalid choice.\nTry again: "COLOR_RESET);
     
                //does not create path for songbook
     bool res = decode_songbook_print(str_arr.strings[choice-1], save_to);
@@ -239,14 +239,14 @@ int deletion_choice(Path *home_path, Songbook *save_to)
         return -1;
 
     putchar('\n');
-    printf("Are you sure you want to remove %s?\n", save_to->name);
+    printf(COLOR_YELLOW"Are you sure you want to remove %s?\n"COLOR_RESET, save_to->name);
     printf("Songbook is located at %s\n", save_to->path->path);
     printf("[0] No\n[1] Yes\n");
-    printf("Your choice: ");
+    printf(COLOR_CYAN"Your choice: "COLOR_RESET);
 
     int choice;
     while ((choice = readnum(0, 1)) == -1)
-        printf("Invalid choice.\nTry again: ");
+        printf(COLOR_RED"Invalid choice.\nTry again: "COLOR_RESET);
 
     return choice;    
 }
@@ -264,7 +264,7 @@ bool get_song(Path *home_path, Song *save_to)
     //get author and convert to ascii
     //save_to->author_ascii == "idk" is possible
     putchar('\n');
-    printf("Author (type 'idk' if unclear): ");
+    printf(COLOR_CYAN"Author (type 'idk' if unclear): "COLOR_RESET);
     char *author = read_line(stdin);
     if (author == NULL)
         return false;
@@ -273,7 +273,7 @@ bool get_song(Path *home_path, Song *save_to)
     save_to->author_ascii = author;
 
     //get song name and convert to ascii
-    printf("Song name: ");
+    printf(COLOR_CYAN"Song name: "COLOR_RESET);
     char *sng_name = read_line(stdin);
     if (sng_name == NULL)
         return false;
@@ -295,7 +295,7 @@ bool get_song(Path *home_path, Song *save_to)
     if (song_path != NULL)
     {
         putchar('\n');
-        printf("Song found in song_collection!\n");
+        printf(COLOR_GREEN"Song found in song_collection!\n"COLOR_RESET);
         bool decoding_res = decode_song(song_path, save_to);
         if (!decoding_res)
         {
@@ -326,11 +326,11 @@ bool get_song(Path *home_path, Song *save_to)
 EditSBChoice edit_choice()
 {
     putchar('\n');
-    printf("\nChoose action to perform upon songbook:\n");
+    printf(COLOR_CYAN"\nChoose action to perform upon songbook:\n"COLOR_RESET);
     printf("[0] Undo\n[1] Add song\n[2] Add multiple songs (using queue)\n[3] Remove song\n");
-    printf("Your choice: ");
+    printf(COLOR_CYAN"Your choice: "COLOR_RESET);
     int choice;
     while ((choice = readnum(0,3)) == -1)
-        printf("Invalid choice.\n Try again: ");
+        printf(COLOR_RED"Invalid choice.\n Try again: "COLOR_RESET);
     return choice;
 }

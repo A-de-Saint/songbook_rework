@@ -388,18 +388,18 @@ Path *song_try_find_noauthor(char *song_name, Path *home_path)
             if (cmp_res == 0)
             {
                 putchar('\n');
-                printf("Possible match found in song_collection\n");
-                printf("Is this the right song?\n");
+                printf(COLOR_GREEN"Possible match found in song_collection\n"COLOR_RESET);
+                printf(COLOR_CYAN"Is this the right song?\n"COLOR_RESET);
                 putchar('\n');
                 printf("%s by %s\n", name, author);
                 free(name);
                 free(author);
                 putchar('\n');
                 printf("[0] No\n[1] Yes\n[2] Uncertain (show part of the text)\n");
-                printf("Your choice: ");
+                printf(COLOR_CYAN"Your choice: "COLOR_RESET);
                 int choice;
                 while ((choice = readnum(0, 2)) == -1)
-                    printf("Invalid input.\nTry again: ");
+                    printf(COLOR_RED"Invalid input.\nTry again: "COLOR_RESET);
                 //the right one
                 if (choice == 1)
                 {
@@ -453,11 +453,11 @@ Path *song_try_find_noauthor(char *song_name, Path *home_path)
                     }
 
                     putchar('\n');
-                    printf("Is this the one?\n");
-                    printf("[0] No\n[1] Yes\nYour choice: ");
+                    printf(COLOR_CYAN"Is this the one?\n"COLOR_RESET);
+                    printf("[0] No\n[1] Yes\n"COLOR_CYAN"Your choice: "COLOR_RESET);
                     int peek_choice;
                     while ((peek_choice = readnum(0,1)) == -1)
-                        printf("Invalid choice\nTry again: ");
+                        printf(COLOR_RED"Invalid choice\nTry again: "COLOR_RESET);
                     if (peek_choice == 1)
                     {
                         path_dtor(path);
@@ -603,16 +603,16 @@ bool download_song_ak(Song *song, bool noauthor)
         if (noauthor)
         {
             putchar('\n');
-            printf("Found a song!\n");
+            printf(COLOR_GREEN"Found a song!\n"COLOR_RESET);
             putchar('\n');
             printf("%s by %s\nThe song goes:\n%s\n", song->name_utf, song->author_utf, description);
             putchar('\n');
-            printf("Is this the one?\n");
+            printf(COLOR_CYAN"Is this the one?\n"COLOR_RESET);
             printf("[0] No\n[1] Yes\n");
-            printf("Your choice: ");
+            printf(COLOR_CYAN"Your choice: "COLOR_RESET);
             int choice;
             while ((choice = readnum(0, 1)) == -1)
-                printf("Invalid choice\nTry again: ");
+                printf(COLOR_RED"Invalid choice\nTry again: "COLOR_RESET);
 
             //if yes, create ascii author and break with good result
             if (choice == 1)
