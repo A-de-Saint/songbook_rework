@@ -381,7 +381,21 @@ bool parse_part_ak(char *curr_html, char **read_until, SongPart *song_part)
             }
 
             //in this case, a char from the lyrics
-            buffer_add(&buffer, curr_html[0]);
+            //convert chord chars to different chars
+            if (curr_html[0] == '[')
+            {
+                buffer_add(&buffer, '\xEF');
+                buffer_add(&buffer, '\xBC');
+                buffer_add(&buffer, '\xBB');
+            }
+            else if (curr_html[0] == ']')
+            {
+                buffer_add(&buffer, '\xEF');
+                buffer_add(&buffer, '\xBC');
+                buffer_add(&buffer, '\xBD');
+            }
+            else
+                buffer_add(&buffer, curr_html[0]);
             curr_html++;
         }
         //close buffer and add to lines
