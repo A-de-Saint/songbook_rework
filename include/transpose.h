@@ -12,4 +12,12 @@ void put_chord(char *repl_line, int *cursor, char *main_part, char *rest);
 
 bool transpose_chord(char *chord, int trans_idx);
 
+static inline void first_to_upper(char *str)
+{
+    if (str[0] >= 'a' && str[0] <= 'z')
+        str[0] -= 32;
+}
+
+void normalize_chord(char *chord);
+
 #endif

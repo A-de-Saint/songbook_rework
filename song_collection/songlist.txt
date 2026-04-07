@@ -44,7 +44,6 @@ chci-ti-rict_mig-21
 chovejte-me-ma-maticko_lidove-pisne
 chybis-mi_tomas-klus
 chytili-jsme-lososa_lidove-pisne
-cizecku-cizecku_lidove-pisne
 co-jste-hasici_lidove-pisne
 co-z-tebe-bude_pokac
 colorado_kabat
@@ -157,7 +156,6 @@ moderni-devce_kabat
 modra-je-dobra_zluty-pes
 modra_jana-kirschner
 morituri-te-salutant_karel-kryl
-na-hotelu-v-olomouci_petr-hapka-amp-michal-horacek-amp-szidi-tobias
 na-kolena_ivan-hlas
 na-ostri-noze_ewa-farna
 na-sever_kabat
@@ -189,7 +187,7 @@ okno-me-lasky_olympic
 okolo-frydku-cesticka_lidove-pisne
 okolo-hradce_lidove-pisne
 okolo-suce_lidove-pisne
-okor_lidove-pisne
+okor_taborova
 otazky_olympic
 pane-prezidente_jaromir-nohavica
 panic_lucie

@@ -147,6 +147,7 @@ int main(void)
 
             printf("\nTranspose to (starting chord): ");
             char *trans_chord = read_line(stdin);
+            first_to_upper(trans_chord);
             if (trans_chord == NULL)
             {
                 fprintf(stderr, "Invalid chord.\n");

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "transpose.h"
 
 //reads string until substring is read
 //returns number of chars to the start of substring in string
@@ -315,6 +316,7 @@ bool parse_part_ak(char *curr_html, char **read_until, SongPart *song_part)
                     //now at scs-chk">
                     char chord[11];
                     sscanf(curr_html, "%10[^<]", chord);
+                    normalize_chord(chord);
                     for (int i = 0; chord[i] != '\0'; i++)
                         buffer_add(&buffer, chord[i]);
                     

@@ -134,7 +134,6 @@ bool get_trans_idx(char *first_chord, char *transpose_to, int *trans_idx)
     }
 
     *trans_idx = transposition_idx - start_chord_idx;
-    printf("Idx is: %d\n", *trans_idx);
     return true;
 }
 
@@ -156,7 +155,6 @@ void put_chord(char *repl_line, int *cursor, char *main_part, char *rest)
 //transposes a single chord
 bool transpose_chord(char *chord, int trans_idx)
 {
-    printf("Transposing this chord: %s\n", chord);
     int chord_idx = -1;
     for (int i = 0; i < chart_size; i++)
     {
@@ -169,7 +167,48 @@ bool transpose_chord(char *chord, int trans_idx)
         return false;
     }
     int new_idx = ((chord_idx + trans_idx) + chart_size) % chart_size;
-    printf("New_idx is: %d\n", new_idx);
     strcpy(chord, trans_chart[new_idx]);
     return true;
+}
+
+//converts weird chords to normal chords (Xb -> (X-1)#; A# -> B)
+void normalize_chord(char *chord)
+{
+    if (chord == NULL)
+        return;
+
+    //short or weird chords can be skipped
+    if (strlen(chord) != 2)
+        return;
+    
+    //convert A# to B and return
+    //or if (Bb, that's czech B)
+    if (strcmp(chord, "A#") == 0 || strcmp(chord, "Bb") == 0)
+    {
+        chord[0] = 'B';
+        chord[1] = '\0';
+        return;
+    }
+
+    //if chord == Xb, then find X in chart and find (X-1)
+    if (chord[1] == 'b')
+    {
+        char main_chr[2] = {chord[0], '\0'};
+        int tr_idx = -1;
+        for (int i = 0; i < chart_size; i++)
+        {
+            if (strcmp(main_chr, trans_chart[i]) == 0)
+            {
+                tr_idx = (i - 1 + chart_size) % chart_size;
+                break;
+            }
+        }
+
+        //if some weirdness, better not touch it
+        if (tr_idx == -1)
+            return;
+
+        //copy new chord
+        strcpy(chord, trans_chart[tr_idx]);
+    }
 }
