@@ -6,6 +6,7 @@
 #include "tex_manager.h"
 #include "html_manager.h"
 #include "multiple_songs.h"
+#include "transpose.h"
 
 //downloads all songs in songbooks queue/queue.txt
 //returns -1 if function failed
@@ -98,11 +99,13 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
         size_t len = strlen(line);
         char *name = malloc(len + 1);
         char *author = malloc(len + 1);
-        if (!parse_name_author(line, format, first, name, author))
+        char *transpose_to = malloc(len + 1);
+        if (!parse_name_author(line, format, first, name, author, transpose_to))
         {
             fprintf(stderr, "Could not parse %s by format %s\n", line, format);
             free(name);
             free(author);
+            free(transpose_to);
             all_okay = false;
             goto loop_end;
         }
@@ -123,6 +126,14 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
                 fprintf(stderr, "Could not decode song from song_collection.\n");
                 goto download;
             }
+            if (transpose_to[0] != '\0')
+            {
+                if (!transpose_song(&song, transpose_to))
+                {
+                    fprintf(stderr, "Could not transpose locally saved version to %s\n", transpose_to);
+                    goto download;
+                }
+            }
         }
         else //need to download
         {
@@ -131,14 +142,27 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
             if (!download_res)
             {
                 song_dtor(&song);
+                free(transpose_to);
                 all_okay = false;
                 goto loop_end;
+            }
+            if (transpose_to[0] != '\0')
+            {
+                if (!transpose_song(&song, transpose_to))
+                {
+                    fprintf(stderr, "Could not transponse to %s\n", transpose_to);
+                    song_dtor(&song);
+                    free(transpose_to);
+                    all_okay = false;
+                    goto loop_end;
+                }
             }
             if (!add_song_songcollection(home_path, &song))
             {
                 fprintf(stderr, "Song could not be added to song_collection\n");
             }
         }
+        free(transpose_to);
 
         //add song to songbook
         if (songbook->format == tex)
@@ -310,7 +334,8 @@ char *parse_format(FILE *file)
     }
     line[i] = '\0';
 
-    if (percent_count != 2)
+    //2 for just author and name, 3 for transposition
+    if (percent_count != 2 && percent_count != 3)
     {
         free(line);
         return NULL;
@@ -321,23 +346,32 @@ char *parse_format(FILE *file)
 
 //parses name_ascii and author_ascii from string based on given format and which comes first
 //does not check for NULL
-bool parse_name_author(char *string, char *format, ComesFirst first, char *name, char *author)
+bool parse_name_author(char *string, char *format, ComesFirst first, char *name, char *author, char *transpose_to)
 {
     asciize_separator(string);
+    int res = 0;
     if (first == AUTHOR)
     {
-        if (sscanf(string, format, author, name) != 2)
+        res = sscanf(string, format, author, name, transpose_to);
+        if (res == 2)
+            transpose_to[0] = '\0';
+        else if (res != 3)
             return false;
     }
     else
     {
-        if (sscanf(string, format, name, author) != 2)
+        res = sscanf(string, format, name, author, transpose_to);
+        if (res == 2)
+            transpose_to[0] = '\0';
+        else if (res != 3)
             return false;
     }
     convert_to_ascii(author);
     convert_to_ascii(name);
     trim_string(author);
     trim_string(name);
+    if (transpose_to[0] != '\0')
+        first_to_upper(transpose_to);
     return true;
 }
 

@@ -17,7 +17,7 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsuces
 
 char *parse_format(FILE *file);
 
-bool parse_name_author(char *string, char *format, ComesFirst first, char *name, char *author);
+bool parse_name_author(char *string, char *format, ComesFirst first, char *name, char *author, char *transpose_to);
 
 void asciize_separator(char *string);
 
