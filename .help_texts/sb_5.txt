@@ -1,0 +1,36 @@
+How does my HTML songbook work?
+
+An HTML songbook looks like this:
+
+[songbook]/
+|
+|--songlist.txt
+|
+|--queue/
+|  |--queue.txt
+|
+|--html/
+|  |--[songbook].html
+|  |--toc.html
+|  |--style.css
+|  |--songs/
+|  |  |--[song1].html
+|  |  |--[song2].html
+|  |  |-- ...
+|  |--temp
+|  |  |--temp.html
+|  |  |--fitDocument.js
+
+where [songbook] is the songbook directory, [song1], [song2], ... are any songs
+
+PROGRAM'S WORKS
+When adding a song, the program gets the song, puts it into the HTML structure, then adds that
+to temp.html and runs the program headlessly in a browser (on the background). There, javascript
+(slow) calculates the perfect size for the song and only then does the song get added to the main HTML.
+When using a queue, all of the added songs are put into temp.html and the "Fixing fontsizes" part
+Takes up to 30s of time.
+
+WHAT YOU CAN EDIT
+- Everything in [songbook].html EXCEPT for the comments (for example <!--content-->)
+    Beware, though, everything after <!--content--> will get overwritten with the next change using the program.
+- Things in style.css (everything is marked if it's safe to edit) - you can also add anything

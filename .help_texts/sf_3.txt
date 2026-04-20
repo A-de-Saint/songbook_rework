@@ -1,0 +1,44 @@
+Can I add my own song manually?
+
+Yes!
+However, be sure to keep all of the formatting.
+
+The filename must be in this format: 'name-name_author-author'
+
+And the song must have this format:
+Name Name
+Author Author
+\num1\
+lyrics in the ChordPro style
+...
+\num1\
+\num2\
+...
+\num2\
+(every part must start and end with the same number)
+
+What the numbers represent:
+\0\ - verse
+\1\ - chorus
+\2\ - intro
+\3\ - interlude
+\4\ - ending
+\5\ - bridge
+\6\ - unknown (other stuff, such as tabs)
+
+EXAMPLE
+Knowing this, you can add your own song 'toci-se-toci_petr-lutka.txt':
+Točí se, točí
+Petr Lutka
+\1\
+[A]Točí se, točí, [E]kolo ve mlý[A]ně.
+Točí se, točí, já [D]jsem v tom nevin[A]ně.
+Točí se [E]kolo, voda vzduchem [A]padá,
+já tomu mlejnu teď [E]ukazuju [A]záda.
+\1\
+\0\
+[A]V tom mlejně žila [A]překrásná [A]dívka,
+kterou jsem měl [E]tůze moc [A]rád.
+Měla modrý [E]oči a černý [A]vlasy,
+ale jednu chybu, [E]nechtěla mi [A]dát.
+\0\

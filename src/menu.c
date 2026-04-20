@@ -46,10 +46,11 @@ ActionChoice action_choice()
     printf("[2] Edit songs in an existing songbook\n");
     printf("[3] Remove songbook\n");
     printf("[4] Add song to global song_collection (transposition possible)\n");
+    printf("[5] Open help menu\n");
     printf(COLOR_CYAN"Your choice: "COLOR_RESET);
 
     int choice;
-    while ((choice = readnum(0, 4)) == -1)
+    while ((choice = readnum(0, 5)) == -1)
         printf(COLOR_RED"Invalid input.\nTry again: "COLOR_RESET);
 
     return choice;

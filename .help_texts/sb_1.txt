@@ -1,0 +1,6 @@
+Where is my songbook located?
+
+Every songbook is in the 'songbooks' folder.
+Go to where your program is (if using a symlink, follow its path)
+and in that directory, you'll find your songbook in a directory of the same name.
+You can find your main.tex or HTML/CSS file there.

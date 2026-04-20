@@ -1,0 +1,6 @@
+Does removing a songbook also remove all of the songs that are in it?
+
+No. It removes the formatted songs that were in the songbook (.html or .tex files),
+but it keeps the .txt song files in song_collection untouched.
+
+In short, it does not interfere in any way with other songbooks.

@@ -9,6 +9,7 @@
 #include "quick_reader.h"
 #include "html_manager.h"
 #include "transpose.h"
+#include "help.h"
 
 int main(void)
 {
@@ -166,6 +167,10 @@ int main(void)
         add_trans_end:
             song_dtor(&song);
             continue;
+        }
+        else if (choice == print_help)
+        {
+            help_menu(home_path);
         }
         else
         {

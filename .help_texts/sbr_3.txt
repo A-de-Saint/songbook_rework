@@ -1,0 +1,17 @@
+Can I recover a removed songbook?
+
+Unfortunately, no. There is no such thing as a trash bin.
+
+HOW YOU CAN TRY TO RECOVER SOMETHING
+On Linux, you can check if some of the songbook's files aren't still open somewhere.
+    If they are, you can recover them (for example by copy-pasting them to a new file)
+On Windows, you can check the trash bin (I'm not sure how removing files using C on Windows works)
+
+If you've lost it all, you can create a songbook of the same name and:
+1. Copy the entire content of song_collection/songlist.txt
+2. Go to the songbook's queue/queue.txt and:
+    2.1. Write 'Format: "%[^_]_%s"' on the first line
+    2.2. Write 'name' on the second line
+    2.3. Paste the copied text on the following lines
+3. Remove all songs that you know weren't in the original songbook from the queue
+4. Run the program, choose [2] Edit songbook -> choose the songbook -> [2] Add multiple songs

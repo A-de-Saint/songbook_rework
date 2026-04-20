@@ -1,0 +1,25 @@
+How are songs saved locally?
+
+Songs are saved to the directory song_collection. The song as a text is saved in the songs/ dir
+and its 'print' is saved in songlist.txt.
+
+The naming convention of a song text file is name-name_author-author.txt
+
+In every song text file, the first line represents the UTF-8 name of the song,
+the second line represents the UTF-8 name of the author.
+
+The next lines represent individual song parts.
+
+Each part starts and ends with \num\, where num represents the type of a song part (see help about adding songs manually).
+
+The actual song lines use the ChordPro format. So there are lyrics and chords are wrapped in [] directly within the lyrics
+
+EXAMPLE FORMAT
+Zafúkané
+Fleret
+\0\
+[Ami]Větr sněh [Asus2]zanésl [Ami]z hor do po[Asus2]lí
+[Ami]já jdu [C]přes kopce, [G]přes údo[Ami]lí
+[C]idu k tvéj [G]dědině zatúla[C]nej
+[F]cestičky [C]sněhem sú [E]zafúka[Ami]né[Fmaj7][Ami][Esus4]
+\0\

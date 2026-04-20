@@ -1,0 +1,19 @@
+How does adding a song work?
+
+When you choose to add a song (for example Song author: Karel Kryl, Song name: Bratricku zavírej vrátka)
+These are the steps the program takes:
+1. Convert author and name to their acii equivalents (Karel Kryl -> karel-kryl, Bratricku zavírej vrátka -> bratricku-zavirej-vratka)
+2. Create a 'song print' (bratricku-zavirej-vratka_karel-kryl)
+3. Compare the song print with entries in song_collection's songlist.txt
+    - If found, use the song saved in song_collection/songs
+    - If not found, continue
+4. Look at akordy-kytary.cz/song/[songname] (akordy-kytary.cz/song/bratricku-zavirej-vratka)
+    4.1 If valid, compare the website's author to desired author (Karel Kryl)
+        - if found, download to song_collection and use that song
+        - if not found, look at akordy-kytary/song/[songname]-2 (and increment until it's not found)
+    4.2 If invalid, try again with akordy-kytary/song/[songname]-2
+        - if that also fails, return not found
+
+All of these options also work with Song author = idk
+Which looks only at the songnames (both locally and on the web) and asks the user if that's the one.
+A great feature!

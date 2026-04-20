@@ -1,0 +1,6 @@
+Why can't I change my TEX songboook's font?
+
+Because the program needs to calculate the width of each line.
+In monospace, every character is the same width, so calculating widthis simple.
+If you were to use non-monospace font, 'm' would be up to 3 times wider than 'i'.
+And if calculating according to the width of 'm', some lines would just not use all of the space it can.

@@ -1,0 +1,16 @@
+Transposition is failing, what should I do?
+
+There may be a few reasons for this happening.
+
+1. Your chord is invalid for the program
+    The program only takes one-letter chords, optionally with a '#' after.
+    If the first chord is 'Ami' and you want 'Emi', just use 'A'. The 'mi' part will be preserved
+
+2. The song contains invalid chords
+    This generally should not happen, but it's more likely to happen with custom songs.
+    Check if there are no 'A#'s or other weird chords that have different european equivalents.
+    These are the supported bases of chords: A,B,H,C,C#,D,D#,E,F,F#,G,G#
+    The first one or two characters of the chord must be one of these.
+
+3. The song format is broken
+    Check if all of the chords are properly within []

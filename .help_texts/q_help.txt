@@ -1,0 +1,40 @@
+How do I use a queue?
+
+Go into a specific songbook's directory, go to the queue subdirectory
+and open 'queue.txt'. A queue works like this:
+
+Format: "[format]" (must contain song name, author, and optionally transposition chord)
+[first]
+[N formatted lines]
+
+Where [format] represents a format according to the C standard, [first] must be
+either 'author' or 'name', based off which represents the first substring in the format
+and [N formatted lines] represents lines that satisfy the specified [format]
+Transposition chord is always assumed to be the last of the parameters and is optional on every line
+
+FORMAT BASICS:
+C's format (for our purposes) works like this:
+%s - any sequence of characters that is followed by whitespace
+%[^c] - sequence of characters followed by c (which can be any ASCII character), ignores whitespace
+\n - newline character
+
+EXAMPLES:
+Format: "%s"; string: "hello world"; parsed result: "hello" (because ' ' after "hello" is whitespace)
+Format: "%[^ ] %s"; string: "hello world "; parsed result: "hello", "world" (read until ' ', then read ' ', then read a string followed by whitespace)
+
+FULL EXAMPLE:
+Format: "%[^-]-%s -t %s"
+name
+zafukane-fleret
+hlidac_krav-jaromir_nohavica -t C#
+
+Explanation: Format says "read until '-', then read '-', then read until whitespace, then read until -t, then read until whitespace (end of line)"
+"name" says that the first thing in the format will be name
+therefore all lines will be in this format: name-author (-t transposition_chord) -> note that transposition chord is optional
+
+COMMON FORMATS:
+For songs taken from songlist.txt: "%[^_]_%s -t %s" (example: hlidac-krav_jaromir-nohavica -t C#)
+For 'Hlídač krav - Jaromír Nohavica -t C#': "%[^-]-%[^-]-t %s"
+
+IF YOU'RE HAVING PROBLEMS WITH THIS
+Ask a clanker: "Convert these lines to a C scanf format" and insert a few lines into the prompt

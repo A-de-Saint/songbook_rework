@@ -1,0 +1,44 @@
+How does my TEX songbook work?
+
+A TEX songbook looks like this:
+
+[songbook]/
+|
+|--songlist.txt
+|
+|--queue/
+|  |--queue.txt
+|
+|--tex_files/
+|  |--main.tex
+|  |--songs.tex
+|  |--songbook.cls
+|  |--songs/
+|  |  |--[song1].tex
+|  |  |--[song2].tex
+|  |  |-- ...
+
+where [songbook] is your songbook directory and [song1], [song2], ... are any songs
+
+WHAT YOU CAN EDIT
+- .tex files in songs
+    You can edit these with confidence, as long as you respect the custom functions (\lyrics, \chord...)
+- main.tex
+    You can confidently edit title, author, the structure of main and add any packages
+    You can add your own stuff, but please do not remove anything important
+
+WHAT YOU CAN EDIT WITH CAREFULLNESS
+- songbook.cls
+    You can edit this as long as you know what you're doing. The code generating each song is not dynamic,
+    so for example fontsize changes may screw the whole document up
+- removing songs manually
+    If you wish to remove a song manually, you must remove it from the songbook's songlist.txt and songs.tex
+
+HOW TO COMPILE THE SONGBOOK INTO PDF
+- On Windows
+    Use MikTeX (or any similar app)
+- On Linux
+    Use pdflatex (pdflatex main.tex)
+- Universal
+    Open the project (tex_files) in Overleaf
+NOTE: You must compile the songbook TWICE so that the table of contents works

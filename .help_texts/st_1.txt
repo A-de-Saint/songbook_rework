@@ -1,0 +1,19 @@
+How does song transposition work?
+
+Song transposition in this program asks you which chord to transpose to and then tries to do the transposition.
+Note that transposition focuses on the first chord of the song.
+
+Transposition works in these steps:
+1. Find your chord on the transposition circle
+2. Find the first chord of the song on the transposition circle
+3. Get transposition offset - meaning the number of steps between your desired chord and the first chord
+4. Move all of the chords by the offset on the transposition circle
+
+EXAMPLE
+Let us have: [Ami][F][Emi][B] in a song and desired transposition chord is [F#]
+The transposition circle is A-B-H-C-C#-D-D#-E-F-F#-G-G#
+1. F# has the index 9 on the transposition circle
+2. A has the index 0 on the transposition circle
+3. The offset is (9 - 0) = +9
+4. Apply - Ami->F#mi, F->D, Emi->C#mi, B->G
+So we get [F#mi][D][C#mi][G]

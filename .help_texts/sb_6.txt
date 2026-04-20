@@ -1,0 +1,20 @@
+How can I edit my HTML songbook (for example font)?
+
+You can edit it using your HTML and CSS knowledge.
+See style.css and [songbook].html to understand the structure.
+
+BASIC STRUCTURE
+Every song has its id, every song part has its class.
+Song part classes are 'verse', 'chorus', 'interlude', 'intro', 'bridge', 'ending' and 'other' (usually tabs)
+At the beginning of style.css, you can see the style of basic points in the document. Change them anytime.
+
+EXAMPLES
+
+To change a font, find a font on google fonts, copy the embedded link and add it to <head>
+Then in style .css, change the font-family of anything to your desired font (google fonts will also give you the command)
+
+To make the chorus red and bold, do this:
+.chorus {
+    font-weight: bold;
+    color: red;
+}

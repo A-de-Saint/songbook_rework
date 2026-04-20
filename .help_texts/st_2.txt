@@ -1,0 +1,5 @@
+How can I transpose a song that is already added in a songbook?
+
+Simply add the song again, with transposition.
+In the current version, you can either add the song to song_collection and then add it to the songbook
+or you can use the queue, where you add the transposition (see help with queue)

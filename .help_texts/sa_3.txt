@@ -1,0 +1,14 @@
+I can't add a song, what should I do?
+
+These are the steps you should take:
+
+1. Try writing the Song author and Song name with no special characters
+    Leave out all commas (,), dots (.) and apostrophes (')
+    Don't write 'Bratříčku, zavírej vrátka', instead write 'bratricku zavirej vratka'
+
+2. Type 'idk' instead of the actual song author and look through all of the options.
+
+3. Check akordy-kytary.cz for the song, and check the URL
+    If the song isn't there, sorry, it can't be automatically downloaded. See help for manual song addition.
+    Some URLs are weird. For example, Bedna od Whisky is stored at akordu-kytary.cz/songs/bena-od-whisky.
+        In that case, you have to type 'bena od whisky' (or 'bena-od-whisky') to download that one.

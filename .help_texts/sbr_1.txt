@@ -1,0 +1,6 @@
+What does removing a songbook do?
+
+It removes the entire songbook directory and removes its 'print' from songbook_list.
+Removing a songbook is equivalent to 'rm -rf [songbook]/'
+
+It does nothing to the songs in song_collection.
