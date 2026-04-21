@@ -202,7 +202,7 @@ void song_trans_help(Path *help_path, size_t size, char buff[size])
                 return;
             break;
         case 2:
-            if (!read_help(size, buff, "st_3.txt", help_path))
+            if (!read_help(size, buff, "st_2.txt", help_path))
                 return;
             break;
         case 3:
