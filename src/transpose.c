@@ -113,6 +113,8 @@ bool transpose_song(Song *song, char *transpose_to)
             curr_part->lines.strings[j] = repl_line;
         }
     }
+    if (!transpose_chord(song->first_chord, trans_idx))
+        return false;
     return true;
 }
 
