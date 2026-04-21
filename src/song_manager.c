@@ -7,6 +7,7 @@
 #include "menu.h"
 #include "ak_parser.h"
 #include "web_downloader.h"
+#include "transpose.h"
 
 #define LINES_START_CAPACITY 8
 #define PARTS_START_CAPACITY 8
@@ -102,6 +103,7 @@ void song_ctor(Song *song)
     song->author_utf = NULL;
     song->name_ascii = NULL;
     song->name_utf = NULL;
+    song->first_chord[0] = '\0';
 }
 
 void song_dtor(Song *song)
@@ -121,14 +123,14 @@ void song_dtor(Song *song)
         free(song->name_utf);
 }
 
-//returns song print string (needs ascii-input)
-//needs to be freed later
-char *create_song_print(char *song_name, char *author)
+//creates a print with just the name and author
+//returns "songname_author"
+char *create_song_print_restricted(char *song_name, char *author)
 {
     if (song_name == NULL || author == NULL)
         return NULL;
 
-    //+2 for '_' (between) and '\0'
+    //+2 for '_' (between name and author) and '\0'
     size_t total = strlen(song_name) + strlen(author) + 2;
     char *print = malloc(total);
     if (print == NULL)
@@ -146,14 +148,53 @@ char *create_song_print(char *song_name, char *author)
     return print;
 }
 
-//creates extended song print of format nameA_authorA\nameU\authorU
-char *create_song_print_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf)
+//returns song print string (needs ascii-input)
+//needs to be freed later
+char *create_song_print(char *song_name, char *author, char *first_chord)
 {
-    if (name_ascii == NULL || name_utf == NULL || author_ascii == NULL || author_utf == NULL)
+    if (song_name == NULL || author == NULL || first_chord == NULL)
         return NULL;
 
-    //+4 for _, \, \, and '\0'
-    size_t total = strlen(name_ascii) + strlen(author_ascii) + strlen(name_utf) + strlen(author_utf) + 4;
+    //+3 for '_' (between name and author), ';' (between author and first_chord) and '\0'
+    size_t total = strlen(song_name) + strlen(author) + strlen(first_chord) + 3;
+    char *print = malloc(total);
+    if (print == NULL)
+        return NULL;
+
+    int i = 0;
+    int j = 0;
+    while (song_name[i] != '\0')
+        print[j++] = song_name[i++];
+    print[j++] = '_';
+    i = 0;
+    while (author[i] != '\0')
+        print[j++] = author[i++];
+    print[j++] = ';';
+    i = 0;
+    while (first_chord[i] != '\0')
+        print[j++] = first_chord[i++];
+    print[j] = '\0';
+    return print;
+}
+
+//turns song_print to song_print_restricted (in-situ)
+void restrict_song_print(char *print)
+{
+    for (int i = 0; print[i] != '\0'; i++)
+    {
+        if (print[i] == ';')
+            print[i] = '\0';
+    }
+}
+
+//creates extended song print of format nameA_authorA\nameU\authorU\first_chord
+char *create_song_print_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf, char *first_chord)
+{
+    if (name_ascii == NULL || name_utf == NULL || author_ascii == NULL || author_utf == NULL || first_chord == NULL)
+        return NULL;
+
+    //+5 for _, \, \, ;, and '\0'
+    size_t total = strlen(name_ascii) + strlen(author_ascii) + strlen(name_utf) + strlen(author_utf) + strlen(first_chord) + 5;
     char *ext_print = malloc(total);
     if (ext_print == NULL)
         return NULL;
@@ -177,6 +218,11 @@ char *create_song_print_extended(char *name_ascii, char *author_ascii, char *nam
 
     while (author_utf[i] != '\0')
         ext_print[j++] = author_utf[i++];
+    ext_print[j++] = ';';
+    i = 0;
+
+    while (first_chord[i] != '\0')
+        ext_print[j++] = first_chord[i++];
     ext_print[j] = '\0';
 
     return ext_print;
@@ -184,7 +230,7 @@ char *create_song_print_extended(char *name_ascii, char *author_ascii, char *nam
 
 //allocs name_save and author_save (overwrites if necessary)
 //frees everything if return == false
-bool decode_song_print(char *to_decode, char **name_save, char **author_save)
+bool decode_song_print(char *to_decode, char **name_save, char **author_save, char first_chord[3])
 {
     if (to_decode == NULL)
         return false;
@@ -200,8 +246,8 @@ bool decode_song_print(char *to_decode, char **name_save, char **author_save)
         return false;
     }
 
-    int res = sscanf(to_decode, "%[^_]_%s", *name_save, *author_save);
-    if (res != 2)
+    int res = sscanf(to_decode, "%[^_]_%[^;];%s", *name_save, *author_save, first_chord);
+    if (res != 3)
     {
         if (*name_save != NULL)
             free(*name_save);
@@ -238,15 +284,20 @@ bool decode_song_print_extended(char *to_decode, char **song_print, char **name_
         free(*name_utf);
         return false;
     }
+    char chord[3] = {'\0'};
 
-    int res = sscanf(to_decode, "%[^\\]\\%[^\\]\\%[^\n]", *song_print, *name_utf, *author_utf);
-    if (res != 3)
+    int res = sscanf(to_decode, "%[^\\]\\%[^\\]\\%[^;];%s", *song_print, *name_utf, *author_utf, chord);
+    if (res != 4)
     {
         free(*song_print);
         free(*name_utf);
         free(*author_utf);
         return false;
     }
+
+    //append chord to song_print
+    strcat(*song_print, ";");
+    strcat(*song_print, chord);
 
     return true;
 }
@@ -284,7 +335,8 @@ Path *song_try_find(char *song_name, char *author, Path *home_path)
         return NULL;
     }
 
-    char *print = create_song_print(song_name, author);
+    size_t compare_count = strlen(song_name) + strlen(author) + 1; //number of characters that are to be compared
+    char *print = create_song_print_restricted(song_name, author);
     if (print == NULL)
     {
         path_dtor(path);
@@ -301,8 +353,8 @@ Path *song_try_find(char *song_name, char *author, Path *home_path)
             continue;
         }
 
-        //since the list is sorted, no need to search where strcmp is > 0
-        int compar_res = strcmp(print, line);
+        //since the list is sorted, no need to search where strncmp is > 0
+        int compar_res = strncmp(print, line, compare_count); //need to compare without first chord
         if (compar_res < 0)
         {
             free(line);
@@ -313,7 +365,7 @@ Path *song_try_find(char *song_name, char *author, Path *home_path)
             fclose(file);
             path_dirback(path);
             if (!path_add(path, "songs", 'd') ||
-                !path_add(path, line, 'f') ||
+                !path_add(path, print, 'f') ||
                 !path_add(path, ".txt", 's'))
             {
                 fprintf(stderr, "Path_add failed.\n");
@@ -373,7 +425,8 @@ Path *song_try_find_noauthor(char *song_name, Path *home_path)
 
         char *name = NULL;
         char *author = NULL;
-        if (decode_song_print(line, &name, &author))
+        char fch_dc[3];
+        if (decode_song_print(line, &name, &author, fch_dc))
         {
             int cmp_res = strcmp(song_name, name);
             if (cmp_res < 0)
@@ -670,6 +723,12 @@ bool download_song_ak(Song *song, bool noauthor)
     //at this point, we have valid html, author and name
     bool didit = parse_chords_lyrics_ak(read_till, song);
     free(html);
+
+    if (!get_first_chord(song, song->first_chord))
+    {
+        song->first_chord[0] = 'C';
+        song->first_chord[1] = '\0';
+    }
     
     return didit;
 }
@@ -694,7 +753,7 @@ bool add_song_songcollection(Path *home_path, Song *song)
     }
 
     //create print
-    char *print = create_song_print(song->name_ascii, song->author_ascii);
+    char *print = create_song_print_restricted(song->name_ascii, song->author_ascii);
     if (print == NULL)
     {
         path_dtor(path);
@@ -735,7 +794,11 @@ bool add_song_songcollection(Path *home_path, Song *song)
     path_dirback(path);
     path_dirback(path);
     path_add(path, "songlist.txt", 'f');
-    bool success = read_insert_write(path, print);
+
+    free(print);
+    print = create_song_print(song->name_ascii, song->author_ascii, song->first_chord);
+    int n = strlen(song->author_ascii) + strlen(song->name_ascii) + 1; //+1 for _
+    bool success = read_insert_write(path, print, n);
     path_dtor(path);
     free(print);
 
@@ -861,13 +924,19 @@ bool decode_song(Path *path, Song *song)
 
     fclose(file);
 
+    if (!get_first_chord(song, song->first_chord))
+    {
+        song->first_chord[0] = 'C';
+        song->first_chord[1] = '\0';
+    }
+
     return true;
 }
 
 //adds song to songlist in a given songbook
-bool add_song_songlist(char *author_ascii, char *name_ascii, Path *songbook_path)
+bool add_song_songlist(char *author_ascii, char *name_ascii, char *first_chord, Path *songbook_path)
 {
-    if (author_ascii == NULL || name_ascii == NULL || songbook_path == NULL || songbook_path->path == NULL)
+    if (author_ascii == NULL || name_ascii == NULL || songbook_path == NULL || songbook_path->path == NULL || first_chord == NULL)
         return false;
     
     //build path to songlist.txt
@@ -880,14 +949,15 @@ bool add_song_songlist(char *author_ascii, char *name_ascii, Path *songbook_path
         return false;
     }
 
-    char *print = create_song_print(name_ascii, author_ascii);
+    char *print = create_song_print(name_ascii, author_ascii, first_chord);
     if (print == NULL)
     {
         path_dtor(path);
         return false;
     }
 
-    bool result = read_insert_write(path, print);
+    int n = strlen(author_ascii) + strlen(name_ascii) + 1; //+1 for _
+    bool result = read_insert_write(path, print, n);
 
     path_dtor(path);
     free(print);
@@ -896,9 +966,9 @@ bool add_song_songlist(char *author_ascii, char *name_ascii, Path *songbook_path
 }
 
 //adds song to songlist with extended prints
-bool add_song_songlist_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf, Path *songbook_path)
+bool add_song_songlist_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf, char *first_chord, Path *songbook_path)
 {
-    if (name_ascii == NULL || author_ascii == NULL || name_utf == NULL || author_utf == NULL)
+    if (name_ascii == NULL || author_ascii == NULL || name_utf == NULL || author_utf == NULL || first_chord == NULL)
         return false;
     if (songbook_path == NULL)
         return false;
@@ -912,14 +982,15 @@ bool add_song_songlist_extended(char *name_ascii, char *author_ascii, char *name
         return false;
     }
 
-    char *print_ext = create_song_print_extended(name_ascii, author_ascii, name_utf, author_utf);
+    char *print_ext = create_song_print_extended(name_ascii, author_ascii, name_utf, author_utf, first_chord);
     if (print_ext == NULL)
     {
         path_dtor(path);
         return false;
     }
 
-    bool res = read_insert_write(path, print_ext);
+    int n = strlen(name_ascii) + strlen(name_utf) + strlen(author_ascii) + strlen(author_utf) + 3; //+3 for _,'\','\'
+    bool res = read_insert_write(path, print_ext, n);
 
     path_dtor(path);
     free(print_ext);

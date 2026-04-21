@@ -80,7 +80,7 @@ bool create_songbook(Songbook *songbook)
         return false;
     }
     char *songbook_print = make_songbook_print(songbook);
-    bool res = read_insert_write(list_path, songbook_print);
+    bool res = read_insert_write(list_path, songbook_print, -1);
     path_dtor(list_path);
     free(songbook_print);
     if (!res)

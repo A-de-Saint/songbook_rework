@@ -31,6 +31,7 @@ typedef struct {
     char *name_ascii;
     char *author_utf;
     char *author_ascii;
+    char first_chord[3];
 } Song;
 
 bool song_part_ctor(SongPart *song_part);
@@ -49,11 +50,15 @@ void song_ctor(Song *song);
 
 void song_dtor(Song *song);
 
-char *create_song_print(char *song_name, char *author);
+char *create_song_print_restricted(char *song_name, char *author);
 
-char *create_song_print_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf);
+char *create_song_print(char *song_name, char *author, char *first_chord);
 
-bool decode_song_print(char *to_decode, char **name_save, char **author_save);
+void restrict_song_print(char *print);
+
+char *create_song_print_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf, char *first_chord);
+
+bool decode_song_print(char *to_decode, char **name_save, char **author_save, char first_chord[3]);
 
 bool decode_song_print_extended(char *to_decode, char **song_print, char **name_utf, char **author_utf);
 
@@ -71,8 +76,8 @@ bool add_song_songcollection(Path *home_path, Song *song);
 
 bool decode_song(Path *path, Song *song);
 
-bool add_song_songlist(char *author_ascii, char *name_ascii, Path *songbook_path);
+bool add_song_songlist(char *author_ascii, char *name_ascii, char *first_chord, Path *songbook_path);
 
-bool add_song_songlist_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf, Path *songbook_path);
+bool add_song_songlist_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf, char *first_chord, Path *songbook_path);
 
 #endif

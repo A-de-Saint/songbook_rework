@@ -7,6 +7,7 @@
 #include "html_manager.h"
 #include "multiple_songs.h"
 #include "transpose.h"
+#include "menu.h"
 
 //downloads all songs in songbooks queue/queue.txt
 //returns -1 if function failed
@@ -174,7 +175,7 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
                 goto pre_loop_end;
             }
             //add song to songlist.txt of the given songbook
-            if (!add_song_songlist(song.author_ascii, song.name_ascii, songbook->path))
+            if (!add_song_songlist(song.author_ascii, song.name_ascii, song.first_chord, songbook->path))
             {
                 fprintf(stderr, "Song couldn't be added to songlist.txt in %s\n", songbook->name);
                 all_okay = false;
@@ -191,7 +192,7 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
                 goto pre_loop_end;
             }
 
-            char *print = create_song_print(song.name_ascii, song.author_ascii);
+            char *print = create_song_print_restricted(song.name_ascii, song.author_ascii);
             if (print == NULL)
             {
                 all_okay = false;
@@ -235,13 +236,13 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
     loop_end:
         if (all_okay)
         {
-            printf("SUCCESS\n");
+            printf(COLOR_GREEN"SUCCESS\n"COLOR_RESET);
             success_count++;
             free(line);
         }
         else
         {
-            printf("FAIL\n");
+            printf(COLOR_RED"FAIL\n"COLOR_RESET);
             str_arr_add(unsuccessful, line);
         }
     }
@@ -277,9 +278,9 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
         path_dtor(html_path);
         song_files_dtor(&sf, !files_closed); //need to negate (obvi)
         if (!html_res)
-            printf("WARN: songs added, but not with fixed sizes\n");
+            printf(COLOR_YELLOW"WARN: songs added, but not with fixed sizes\n"COLOR_RESET);
         if (!main_res)
-            printf("WARN: everything went good, but main html could not be assembled\n");
+            printf(COLOR_YELLOW"WARN: everything went good, but main html could not be assembled\n"COLOR_RESET);
     }
 
     free(format);

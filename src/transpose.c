@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 const int chart_size = 12;
 const char *trans_chart[] = {"A", "B", "H", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
@@ -60,6 +61,13 @@ bool transpose_song(Song *song, char *transpose_to)
                                 return false;
                             }
                             trans_idx_acq = true;
+
+                            //if trans_idx == 0, no need to transpose
+                            if (trans_idx == 0)
+                            {
+                                free(repl_line);
+                                return true;
+                            }
                         }
                         chord_rest[rest_curs] = '\0';
                         if (!transpose_chord(chord_main_part, trans_idx))
@@ -211,4 +219,55 @@ void normalize_chord(char *chord)
         //copy new chord
         strcpy(chord, trans_chart[tr_idx]);
     }
+}
+
+//gets first chord from the song (its main part)
+//returns true only if the first chord has been found
+bool get_first_chord(Song *song, char first_chord[3])
+{
+    if (song == NULL)
+        return false;
+
+    first_chord[0] = '\0';
+
+    for (unsigned int i = 0; i < song->data.count; i++)
+    {
+        StringArray *str_arr = &song->data.parts[i].lines;
+        for (unsigned int j = 0; j < str_arr->size; j++)
+        {
+            char *line = str_arr->strings[j];
+            bool reading_chord = false;
+            int write_idx = 0;
+            for (int k = 0; line[k] != '\0'; k++)
+            {
+                if (reading_chord)
+                {
+                    if (line[k] == ']')
+                    {
+                        if (first_chord[0] != '\0')
+                            return true;
+                        reading_chord = false;
+                        continue;
+                    }
+                    if (write_idx == 0)
+                    {
+                        first_chord[write_idx++] = line[k];
+                        first_chord[write_idx] = '\0';
+                        continue; 
+                    }
+                    if (write_idx == 1)
+                    {
+                        if (line[k] == '#')
+                            first_chord[1] = '#';
+                        first_chord[2] = '\0';
+                        write_idx++;
+                    }
+                }
+                else if (line[k] == '[')
+                    reading_chord = true;
+            }
+        }
+    }
+
+    return false;
 }

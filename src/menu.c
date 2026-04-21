@@ -328,10 +328,10 @@ EditSBChoice edit_choice()
 {
     putchar('\n');
     printf(COLOR_CYAN"\nChoose action to perform upon songbook:\n"COLOR_RESET);
-    printf("[0] Undo\n[1] Add song\n[2] Add multiple songs (using queue)\n[3] Remove song\n");
+    printf("[0] Undo\n[1] Add song\n[2] Add multiple songs (using queue)\n[3] Remove song\n[4] Refresh (recompile) songbook\n");
     printf(COLOR_CYAN"Your choice: "COLOR_RESET);
     int choice;
-    while ((choice = readnum(0,3)) == -1)
+    while ((choice = readnum(0,4)) == -1)
         printf(COLOR_RED"Invalid choice.\n Try again: "COLOR_RESET);
     return choice;
 }

@@ -27,7 +27,7 @@ bool add_song_html(Songbook *songbook, Song *song, bool fix_rightaway)
         return false;
     }
     
-    char *song_print = create_song_print(song->name_ascii, song->author_ascii);
+    char *song_print = create_song_print_restricted(song->name_ascii, song->author_ascii);
     if (song_print == NULL)
     {
         path_dtor(path);
@@ -40,7 +40,7 @@ bool add_song_html(Songbook *songbook, Song *song, bool fix_rightaway)
     if (res)
     {
         res = add_song_songlist_extended(song->name_ascii, song->author_ascii,
-                song->name_utf, song->author_utf, songbook->path);
+                song->name_utf, song->author_utf, song->first_chord, songbook->path);
     }
 
     //measure song fontsize
@@ -302,6 +302,7 @@ int build_toc_html(FILE *toc, FILE *songlist)
             free(line);
             continue;
         }
+
         str_arr_add(&str_arr, line);
     }
 
@@ -359,6 +360,9 @@ int build_toc_html(FILE *toc, FILE *songlist)
                 page_entries--;
                 continue;
             }
+
+            //remove first chord, so that it matches
+            restrict_song_print(print);
             
             fprintf(toc, "                <li>\n");
             fprintf(toc, "                    <a href=\"#%s\">\n", print);
@@ -812,6 +816,8 @@ post_toc:
         }
         free(name);
         free(author);
+
+        restrict_song_print(song_print);
 
         //open song
         if (!path_add(song_path, song_print, 'f') ||

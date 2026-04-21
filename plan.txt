@@ -228,3 +228,12 @@ song formatting (my style)
 - HTML toc
     - I've decided that it'd be best if every song had it own id based on song_print
     - TOC only gets built once, after all of the songs were added
+
+- transposition info for songs in songbooks
+    - Now that I have transposition, I should save info about that to individual songlists
+    - That means I have to add one more thing to songlist.txt
+    - Every entry will have '\-t[main_chord_part]' in the end
+    - There is a problem that I can think about right now
+        - Since "songprint" and "songprint\-t[Ch]" are not the same, duplicates are possible
+            - So read_insert_write should use strncmp
+            - Or I could make that a feature

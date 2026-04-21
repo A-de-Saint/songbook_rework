@@ -23,7 +23,7 @@ bool add_song_tex(Songbook *songbook, Song *song)
         return false;
     }
 
-    char *print = create_song_print(song->name_ascii, song->author_ascii);
+    char *print = create_song_print_restricted(song->name_ascii, song->author_ascii);
     if (print == NULL)
     {
         path_dtor(tex_path);
@@ -319,7 +319,7 @@ bool add_song_to_main(Path *tex_path, char *song_print)
     strcat(full_line, song_print);
     strcat(full_line, suffix);
 
-    bool res = read_insert_write(path, full_line);
+    bool res = read_insert_write(path, full_line, -1);
 
     path_dtor(path);
     free(full_line);

@@ -20,4 +20,6 @@ static inline void first_to_upper(char *str)
 
 void normalize_chord(char *chord);
 
+bool get_first_chord(Song *song, char first_chord[3]);
+
 #endif

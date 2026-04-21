@@ -34,7 +34,8 @@ typedef enum {
     go_back,
     add_song,
     add_multiple,
-    remove_song
+    remove_song,
+    recompile
 } EditSBChoice;
 
 int readnum(int min, int max);

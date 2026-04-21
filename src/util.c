@@ -66,7 +66,8 @@ void str_arr_dtor(StringArray *str_arr)
 //cannot add empty string
 //path must include filename and suffix
 //if already there, won't add again (no duplicates allowed)
-bool read_insert_write(Path *path, char *to_insert)
+//if n > 0, then strncmp (with n) is used instead of strcmp
+bool read_insert_write(Path *path, char *to_insert, int n)
 {
     if (path == NULL || to_insert == NULL)
         return false;
@@ -94,11 +95,33 @@ bool read_insert_write(Path *path, char *to_insert)
                 continue;
             }
 
-            int comp = strcmp(to_insert, string);
-            if (comp == 0) //prevents duplicates
+            //comparation
+            int comp;
+            if (n <= 0)
+                comp = strcmp(to_insert, string);
+            else
+                comp = strncmp(to_insert, string, n);
+            
+            if (!added && comp == 0) //prevents duplicates
             {
-                free(to_insert_cpy);
-                added = true;
+                if (n <= 0)
+                {
+                    free(to_insert_cpy);
+                    added = true;
+                }
+                else //strncmp case - overwrite
+                {
+                    if (!str_arr_add(&str_arr, to_insert_cpy))
+                    {
+                        free(to_insert_cpy);
+                        str_arr_dtor(&str_arr);
+                        fclose(file);
+                        return false;
+                    }
+                    added = true;
+                    free(string);
+                    continue;
+                }
             }
             if (!added && comp < 0)
             {

@@ -65,7 +65,7 @@ int main(void)
                         goto song_edit_end;
                     }
                     //add song to songlist
-                    if (!add_song_songlist(song.author_ascii, song.name_ascii, songbook.path))
+                    if (!add_song_songlist(song.author_ascii, song.name_ascii, song.first_chord, songbook.path))
                     {
                         fprintf(stderr, "Song couldn't be added to songlist.txt in %s\n", songbook.name);
                         goto song_edit_end;
