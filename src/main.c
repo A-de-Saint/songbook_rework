@@ -10,6 +10,7 @@
 #include "html_manager.h"
 #include "transpose.h"
 #include "help.h"
+#include "recompiler.h"
 
 int main(void)
 {
@@ -106,6 +107,27 @@ int main(void)
                     {
                         printf(COLOR_RED"%s\n"COLOR_RESET, errors.strings[i]);
                     }
+                }
+                str_arr_dtor(&errors);
+            }
+            else if (edit_action == recompile)
+            {
+                StringArray errors = str_arr_ctor(16);
+                int recomp_result = recompile_songbook(home_path, &songbook, &errors);
+                if (recomp_result == -1)
+                {
+                    fprintf(stderr, "Recompilation of chosen songbook failed\n");
+                }
+                else 
+                {
+                    printf(COLOR_GREEN"\nSuccessfully recompiled %d songs\n"COLOR_RESET, recomp_result);
+                    printf(COLOR_YELLOW"Unsuccessful attempts: (%u)\n"COLOR_RESET, errors.size);
+                    for (unsigned int i = 0; i < errors.size; i++)
+                    {
+                        printf(COLOR_RED"%s\n"COLOR_RESET, errors.strings[i]);
+                    }
+                    if (errors.size != 0)
+                        printf(COLOR_YELLOW"\nThe songs listed above will be kept as their previous versions.\n"COLOR_RESET);
                 }
                 str_arr_dtor(&errors);
             }

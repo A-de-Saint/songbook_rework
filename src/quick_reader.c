@@ -61,8 +61,8 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
             first = NAME;
         else
             success = false;
+        free(line);
     }
-    free(line);
     if (!success)
     {
         fprintf(stderr, "Could not determine whether author or name comes first in the format.\n");
@@ -71,6 +71,12 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
         return -1;
     }
 
+    return get_multiple_songs_parsed(home_path, songbook, file, format, first, unsuccessful);
+}
+
+//performs adding from a queue after queue is open, format is parsed, first is determined and everything is ready
+int get_multiple_songs_parsed(Path *home_path, Songbook *songbook, FILE *file, char *format, ComesFirst first, StringArray *unsuccessful)
+{
     //html-specific
     SongFiles sf;
     if (songbook->format == HTML)
@@ -85,6 +91,7 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
 
     //now we have format and what comes first
     int success_count = 0;
+    char *line;
     while ((line = read_line(file)) != NULL)
     {
         if (*line == '\0')
@@ -115,7 +122,13 @@ int get_multiple_songs(Path *home_path, Songbook *songbook, StringArray *unsucce
         song_ctor(&song);
         song.author_ascii = author;
         song.name_ascii = name;
-        printf("%s\t%s\n", song.author_ascii, song.name_ascii);
+        song.first_chord[0] = transpose_to[0];
+        song.first_chord[1] = transpose_to[1];
+        song.first_chord[2] = '\0';
+        printf("%s\t%s", song.author_ascii, song.name_ascii);
+        if (transpose_to[0] != '\0')
+            printf("\t-t %s", transpose_to);
+        putchar('\n');
         Path *song_path = song_try_find(name, author, home_path);
         if (song_path != NULL)
         {
@@ -316,7 +329,8 @@ char *parse_format(FILE *file)
 
     //parse format while counting %s
     bool escaped = false;
-    int percent_count = 0; //counts %
+    bool percent_read = false;
+    int percent_count = 0; //counts % (does not count ignored)
     int j = 0;
     for (; line[i] != '"' && !escaped; i++)
     {
@@ -326,8 +340,14 @@ char *parse_format(FILE *file)
             return NULL;
         }
         line[j++] = line[i];
+        if (percent_read)
+        {
+            if (line[i] != '*')
+                percent_count++;
+            percent_read = false;
+        }
         if (line[i] == '%' && !escaped)
-            percent_count++;
+            percent_read = true;
         if (line[i] == '\\' && !escaped)
             escaped = true;
         else
