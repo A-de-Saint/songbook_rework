@@ -332,28 +332,32 @@ char *parse_format(FILE *file)
     bool percent_read = false;
     int percent_count = 0; //counts % (does not count ignored)
     int j = 0;
-    for (; line[i] != '"' && !escaped; i++)
+    for (; line[i] != '"' || escaped; i++)
     {
+        //if '\0' before finding second '"', invalid
         if (line[i] == '\0')
         {
             free(line);
             return NULL;
         }
-        line[j++] = line[i];
+        line[j++] = line[i]; //copy char
         if (percent_read)
         {
-            if (line[i] != '*')
+            if (line[i] != '*') //if case %*, don't count that
                 percent_count++;
             percent_read = false;
         }
         if (line[i] == '%' && !escaped)
             percent_read = true;
         if (line[i] == '\\' && !escaped)
+        {
             escaped = true;
+            j--; //don't count unescaped '\'
+        }
         else
             escaped = false;
     }
-    line[i] = '\0';
+    line[j] = '\0';
 
     //2 for just author and name, 3 for transposition
     if (percent_count != 2 && percent_count != 3)

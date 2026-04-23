@@ -453,6 +453,20 @@ Path *song_try_find_noauthor(char *song_name, Path *home_path)
                 int choice;
                 while ((choice = readnum(0, 2)) == -1)
                     printf(COLOR_RED"Invalid input.\nTry again: "COLOR_RESET);
+
+                if (choice == 0)
+                {
+                    free(line);
+                    continue;
+                }
+
+                //choice isn't 0, therefore we need to work with the path
+                //convert to restricted song_print (so that path matches)
+                //do that in line
+                int i = 0;
+                while (line[i] != ';' && line[i] != '\0') i++;
+                line[i] = '\0';
+
                 //the right one
                 if (choice == 1)
                 {
@@ -469,11 +483,6 @@ Path *song_try_find_noauthor(char *song_name, Path *home_path)
                     }
                     free(line);
                     return path;
-                }
-                else if (choice == 0)
-                {
-                    free(line);
-                    continue;
                 }
                 else //peek at song
                 {

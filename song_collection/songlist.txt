@@ -262,7 +262,7 @@ tak-se-nezlob_marek-ztraceny;C
 talinskej-rybnik_lidove-pisne;F
 telatko-oblibene_jaromir-nohavica;G
 tesinska_jaromir-nohavica;A
-to-ta-helpa_lidove-pisne;G
+to-ta-helpa_lidove-pisne;E
 toci-se-toci_petr-lutka;A
 touha_daniel-landa;F
 traktor_visaci-zamek;G
