@@ -1,6 +1,7 @@
 *.o
 .tests/
 songbook
+songbook.exe
 obj
 song_collection/songs/*
 unused

@@ -5,6 +5,24 @@ bool fs_opendir(fs_dir *dir, const char *path)
 {
     #ifdef _WIN32
         //TODO Windows part
+        size_t path_len = strlen(path);
+        char *pattern_path = malloc(path_len + 3); //+3 for '\\', '*' and '\0'
+        if (pattern_path == NULL)
+            return false;
+        pattern_path[path_len] = '\\';
+        pattern_path[path_len + 1] = '*';
+        pattern_path[path_len + 2] = '\0';
+
+        dir->handle = FindFirstFileA(pattern_path, &dir->data);
+
+        free(pattern_path);
+
+        if (dir->handle == INVALID_HANDLE_VALUE)
+            return false;
+
+        dir->first = 1;
+        return true;
+        
     #else
         dir->dir = opendir(path);
         if (dir->dir == NULL)
@@ -17,6 +35,17 @@ bool fs_readdir(fs_dir *dir, char *buffer, unsigned int b_size)
 {
     #ifdef _WIN32
         //TODO Windows part
+        if (dir->first)
+            dir->first = 0;
+        else
+        {
+            if (!FindNextFileA(dir->handle, &dir->data))
+                return false;
+        }
+
+        strncpy(buffer, dir->data.cFileName, b_size-1);
+        buffer[b_size-1] = '\0';
+        return true;
     #else
         struct dirent *e = readdir(dir->dir);
         if (e == NULL)
@@ -31,6 +60,11 @@ void fs_closedir(fs_dir *dir)
 {
     #ifdef _WIN32
         //TODO Windows part
+        if (dir != NULL && dir->handle != INVALID_HANDLE_VALUE)
+        {
+            FindClose(dir->handle);
+            dir->handle = INVALID_HANDLE_VALUE;
+        }
     #else
         if (dir != NULL && dir->dir != NULL)
         {
@@ -47,6 +81,15 @@ int fs_isdir(const char *path)
         return -1;
     #ifdef _WIN32
         //TODO Windows part
+        DWORD attributes = GetFileAttributesA(path);
+
+        if (attributes == INVALID_FILE_ATTRIBUTES)
+        {
+            fprintf(stderr, "fs_isdir: Not a file or a directory\n");
+            return -1;
+        }
+
+        return (attributes & FILE_ATTRIBUTE_DIRECTORY) ? 1 : 0;
     #else 
         struct stat st;
 
