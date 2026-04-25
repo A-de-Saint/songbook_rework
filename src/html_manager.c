@@ -452,9 +452,9 @@ int get_temp_results(Path *temp_path, float *results, int results_count)
         int var1_count = 2;
         const char *command_path_var_2[] = {"Program Files", "Program Files(x86)"};
         int var2_count = 2;
-        const char *command_continuation = "Google\\Chrome\\Application\\chrome.exe";
+        const char *command_continuation = "\\Google\\Chrome\\Application\\chrome.exe";
         const char *flags = "--headless=new --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=25000 --run-all-compositor-stages-before-draw ";
-        const char *silence = "2>nul";
+        const char *silence = " 2>nul";
 
         //+4 for 2 * '"', ' ' and '\0'
         char *command = malloc(strlen(command_path_var_1[1]) + strlen(command_path_var_2[1]) + strlen(command_continuation) + strlen(temp_path->path) + strlen(silence) + 4);
@@ -474,6 +474,7 @@ int get_temp_results(Path *temp_path, float *results, int results_count)
                 strcat(command, command_continuation);
                 strcat(command, "\" ");
                 strcat(command, flags);
+                strcat(command, temp_path->path);
                 strcat(command, silence);
 
                 DOM = _popen(command, "r");
@@ -482,10 +483,10 @@ int get_temp_results(Path *temp_path, float *results, int results_count)
                     free(command);
                     break;
                 }
-                else
+                /*else
                 {
                     fprintf(stderr, "Could not do this:\n%s\n", command);
-                }
+                }*/
             }
 
             if (DOM != NULL)

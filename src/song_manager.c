@@ -321,7 +321,7 @@ Path *song_try_find(char *song_name, char *author, Path *home_path)
         return NULL;
 
     //make path to songlist.txt
-    if (!path_add(path, "song_collection/songlist.txt", 'f'))
+    if (!path_add(path, "song_collection", 'd') || !path_add(path, "songlist.txt", 'f'))
     {
         path_dtor(path);
         return NULL;
@@ -833,6 +833,8 @@ bool decode_song(Path *path, Song *song)
         return false;
     if (path->path == NULL || song->data.parts == NULL)
         return false;
+
+    printf("%s\n", path->path); //DEBUG
 
     FILE *file = fopen(path->path, "r");
     if (file == NULL)

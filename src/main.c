@@ -12,12 +12,24 @@
 #include "help.h"
 #include "recompiler.h"
 
-int main(void)
+int main(int argc, char **argv)
 {
+    if (argc < 1)
+        printf("Error loading the program\n");
+
     //load libcurl
     curl_global_init(CURL_GLOBAL_DEFAULT);
 
-    Path *home_path = path_ctor(".");
+    //get home path from first argument - which the absolute path of the program
+    Path *home_path = path_ctor(argv[0]);
+    path_dirback(home_path);
+
+    //just in case the path is weird
+    if (home_path->length == 0)
+    {
+        path_dtor(home_path);
+        home_path = path_ctor(".");
+    }
 
     printf(COLOR_CYAN"---SONGBOOK---\nA program made for automatically creating songbooks\n"COLOR_RESET);
 
