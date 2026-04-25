@@ -17,7 +17,7 @@
     #include <direct.h>
 
     #define fs_unlink(path) _unlink(path)
-    #define fr_rmdir(path) _rmdir(path)
+    #define fs_rmdir(path) _rmdir(path)
 #else
     #include <unistd.h>
     #include <dirent.h>

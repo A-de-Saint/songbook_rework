@@ -7,7 +7,7 @@ bool fs_opendir(fs_dir *dir, const char *path)
         //TODO Windows part
     #else
         dir->dir = opendir(path);
-        if (dir == NULL)
+        if (dir->dir == NULL)
             return false;
         return true;
     #endif
@@ -35,7 +35,7 @@ void fs_closedir(fs_dir *dir)
         if (dir != NULL && dir->dir != NULL)
         {
             closedir(dir->dir);
-            dir = NULL;
+            dir->dir = NULL;
         }
     #endif
 }
