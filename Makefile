@@ -4,13 +4,23 @@ CFLAGS = -Wall -Wextra -Werror -Iinclude
 SRC_DIR = src
 OBJ_DIR = obj
 BIN = songbook
+WIN_BIN = songbook.exe
+LCURL_DLL = (wildcard /mingw64/bin/libcurl-*.dll)
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-.PHONY: all clean
+.PHONY: all clean windows
 
 all: $(BIN)
+
+windows: $(WIN_BIN)
+
+lcurl-cpy: $(LCURL_DLL)
+	cp $(LCURL_DLL) .
+
+$(WIN_BIN): $(OBJS) lcurl-cpy
+	$(CC) $(OBJS) -static-libgcc -lcurl -o $@
 
 $(BIN): $(OBJS)
 	$(CC) $(OBJS) -lcurl -o $@
