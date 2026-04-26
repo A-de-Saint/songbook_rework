@@ -12,3 +12,5 @@ test_folder
 songbooks/*
 !songbooks/.templates
 vgcore*
+*.dll
+*.crt

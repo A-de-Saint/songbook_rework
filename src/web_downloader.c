@@ -89,6 +89,10 @@ char *read_website(char *url)
         return NULL;
     }
 
+    //some certificate work on windows
+    #ifdef _WIN32
+        curl_easy_setopt(curl, CURLOPT_CAINFO, "ca-bundle.crt");
+    #endif
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_buffer);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &bb);
