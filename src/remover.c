@@ -9,10 +9,12 @@ bool fs_opendir(fs_dir *dir, const char *path)
         char *pattern_path = malloc(path_len + 3); //+3 for '\\', '*' and '\0'
         if (pattern_path == NULL)
             return false;
+
+        strcpy(pattern_path, path);
         
         //need to have dir\* -> if already ends with \, do not add
         int offset = 0;
-        if (pattern_path[path_len - 1] != DIFF_CHAR)
+        if (path_len == 0 || pattern_path[path_len - 1] != DIFF_CHAR)
         {
             pattern_path[path_len] = DIFF_CHAR;
             offset++;
