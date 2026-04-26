@@ -8,7 +8,7 @@
 #include <limits.h>
 
 #ifndef NAME_MAX
-    #define NAME_MAX 255
+    #define NAME_MAX 1024
 #endif
 
 #ifdef _WIN32

@@ -456,8 +456,8 @@ int get_temp_results(Path *temp_path, float *results, int results_count)
         const char *flags = "--headless=new --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=25000 --run-all-compositor-stages-before-draw ";
         const char *silence = " 2>nul";
 
-        //+4 for 2 * '"', ' ' and '\0'
-        char *command = malloc(strlen(command_path_var_1[1]) + strlen(command_path_var_2[1]) + strlen(command_continuation) + strlen(temp_path->path) + strlen(silence) + 4);
+        //just allocate a lot of memory
+        char *command = malloc(1024 + strlen(temp_path->path));
 
         if (command == NULL)
             return -1;
@@ -666,7 +666,17 @@ bool fix_fontsizes_fclose(SongFiles *songs, Path *main_path)
                 char *breakpoint;
                 if (s_read_until(line, "song-content", &breakpoint) != -1)
                 {
-                    line = realloc(line, strlen(line) + 16); //make room for the float
+                    char *tmp = realloc(line, strlen(line) + 32); //make room for the float
+                    if (tmp == NULL)
+                    {
+                        fprintf(stderr, "Allocation failure\n");
+                        free(line);
+                        fclose(song);
+                        str_arr_dtor(&str_arr);
+                        return false;
+                    }
+                    line = tmp;
+
                     if (s_read_until(line, "font-size:", &breakpoint) != -1)
                     {
                         //print to the part of the string

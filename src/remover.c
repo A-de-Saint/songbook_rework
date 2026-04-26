@@ -9,16 +9,26 @@ bool fs_opendir(fs_dir *dir, const char *path)
         char *pattern_path = malloc(path_len + 3); //+3 for '\\', '*' and '\0'
         if (pattern_path == NULL)
             return false;
-        pattern_path[path_len] = '\\';
-        pattern_path[path_len + 1] = '*';
-        pattern_path[path_len + 2] = '\0';
+        
+        //need to have dir\* -> if already ends with \, do not add
+        int offset = 0;
+        if (pattern_path[path_len - 1] != DIFF_CHAR)
+        {
+            pattern_path[path_len] = DIFF_CHAR;
+            offset++;
+        }
+        pattern_path[path_len + offset++] = '*';
+        pattern_path[path_len + offset] = '\0';
 
         dir->handle = FindFirstFileA(pattern_path, &dir->data);
 
         free(pattern_path);
 
         if (dir->handle == INVALID_HANDLE_VALUE)
+        {
+            fprintf(stderr, "Invalid handle value.\n");
             return false;
+        }
 
         dir->first = 1;
         return true;
@@ -129,8 +139,8 @@ bool rm_rf(Path *path)
             if (!rm_rf(path))
             {
                 fs_closedir(&dir);
+                fprintf(stderr, "Failed to remove %s\n", path->path);
                 path_dirback(path);
-                fprintf(stderr, "An error occured during file removal.\n");
                 return false;
             }
             path_dirback(path);
@@ -139,5 +149,14 @@ bool rm_rf(Path *path)
         fs_closedir(&dir);
         return fs_rmdir(path->path) == 0;
     }
+
+    //remove read-only attributes on Windows
+    #ifdef _WIN32
+        DWORD attr = GetFileAttributesA(path->path);
+        if (attr != INVALID_FILE_ATTRIBUTES) {
+            SetFileAttributesA(path->path, attr & ~FILE_ATTRIBUTE_READONLY);
+        }
+    #endif
+
     return fs_unlink(path->path) == 0;
 }
