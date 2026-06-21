@@ -34,4 +34,16 @@ void trim_string(char *string);
 
 char check_name(char *name);
 
+//counts bytes of a character
+static inline int char_bytes_count(unsigned char ch)
+{
+    if ((ch & 0x80) == 0x00) return 1;
+    if ((ch & 0xE0) == 0xC0) return 2;
+    if ((ch & 0xF0) == 0xE0) return 3;
+    if ((ch & 0xF8) == 0xF0) return 4;
+
+    //invalid
+    return 0;
+}
+
 #endif

@@ -80,4 +80,6 @@ bool add_song_songlist(char *author_ascii, char *name_ascii, char *first_chord, 
 
 bool add_song_songlist_extended(char *name_ascii, char *author_ascii, char *name_utf, char *author_utf, char *first_chord, Path *songbook_path);
 
+bool clamp_song(Song *song);
+
 #endif

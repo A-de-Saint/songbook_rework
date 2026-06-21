@@ -12,6 +12,8 @@
 #define LINES_START_CAPACITY 8
 #define PARTS_START_CAPACITY 8
 
+bool merge_lines(Song *song);
+
 bool song_part_ctor(SongPart *song_part)
 {
     if (song_part == NULL)
@@ -751,6 +753,13 @@ bool add_song_songcollection(Path *home_path, Song *song)
     if (song->name_ascii == NULL || song->name_utf == NULL || song->data.parts == NULL)
         return false;
 
+    //clamp before adding to song_collection
+    if (!clamp_song(song))
+    {
+        fprintf(stderr, "Failed to clamp song\n");
+        return false;
+    }
+
     //build path
     Path *path = path_copy(home_path, false);
     if (path == NULL)
@@ -1007,4 +1016,159 @@ bool add_song_songlist_extended(char *name_ascii, char *author_ascii, char *name
     free(print_ext);
 
     return res;
+}
+
+//tries to adjust the song to the A4 paper (merges two lines, if there are a lot of short lines)
+//monospace based prediction
+//assumes HTML format
+//returns true if the action was succesfull, no matter the clamping status
+bool clamp_song(Song *song)
+{
+    if (song == NULL)
+        return false;
+
+    unsigned int max = 0;
+    unsigned int lines_count = song->data.count;
+
+    //count lines and find the longest line
+    for (unsigned int i = 0; i < song->data.count; i++)
+    {
+        StringArray *curr_sa = &song->data.parts[i].lines;
+        lines_count += curr_sa->size;
+        for (unsigned int j = 0; j < curr_sa->size; j++)
+        {
+            unsigned int count = 0;
+            char *curr_line = curr_sa->strings[j];
+            while (*curr_line != '\0')
+            {
+                int bytes = char_bytes_count((unsigned char)*curr_line);
+
+                //invalid character found
+                if (bytes == 0) return false;
+                
+                while (--bytes > 0)
+                {
+                    curr_line++;
+                    if (*curr_line == '\0')
+                        return false; //again, invalid
+                }
+
+                //move to next byte
+                curr_line++;
+
+                count++;
+            }
+
+            if (count > max)
+                max = count;
+        }
+    }
+
+    //now, try to look at it on an A4 paper
+    //height of our space on the A4 is 240mm
+    //width is 170mm
+
+    //240mm / 170mm = 1.4118
+    //so the ideal text should be 1.4118 higher than it is wide
+    
+    //unclamped text:
+    // res = height / width = (lines_count * 2) / max
+    //clamped text (roughly):
+    // res = (height / 2) / (width * 2) = lines_count / (max * 2)
+
+    //whichever is closer to 1.4118 is better
+    //this is a linear function and should need just one comparison
+
+    //one more thing - since splitting is a thing, it's also needed to calculate a split unclamped song
+    //and just to be sure, a split clamped song as well
+    //if the song is split, there's a 10mm gap, lets approximate that to 3.5 characters
+    //split unclamped text:
+    // res = (height / 2) / (width * 2 + 3) = lines_count / (max * 2 + 3)
+    //split clamped text:
+    // res = (height / 4) / (width * 4 + 3) = (lines_count / 2) / (max * 4 + 3)
+    
+    //float lines count
+    float lc_f = (float)lines_count;
+    float width_f = (float)max;
+
+    //whether to clamp or not
+    bool clamp;
+    float min_res;
+
+    //subtract target to get distance
+    //unclamped
+    float uncl_res = ((lc_f * 2.0) / width_f) - 1.4118;
+    if (uncl_res < 0.0)
+        uncl_res = -uncl_res;
+    min_res = uncl_res;
+    clamp = false;
+
+    //clamped
+    float cl_res = lc_f / (width_f * 2.0) - 1.4118;
+    if (cl_res < 0.0)
+        cl_res = -cl_res;
+    if (cl_res < min_res)
+        clamp = true;
+
+    //split unclamped
+    float s_uncl_res = lc_f / (width_f * 2.0 + 3.5) - 1.4118;
+    if (s_uncl_res < 0.0)
+        s_uncl_res = -s_uncl_res;
+    if (s_uncl_res < min_res)
+        clamp = false;
+
+    float s_cl_res = (lc_f / 2.0) / (width_f * 4.0 + 3.5) - 1.4118;
+    if (s_cl_res < 0.0)
+        s_cl_res = -s_cl_res;
+    if (s_cl_res < min_res)
+        clamp = true;
+
+    if (clamp)
+        merge_lines(song);
+
+    return true;
+}
+
+bool merge_lines(Song *song)
+{
+    for (unsigned int i = 0; i < song->data.count; i++)
+    {
+        StringArray *curr_sa = &song->data.parts[i].lines;
+        unsigned int new_count = 0;
+        for (unsigned int j = 0; j < curr_sa->size; j += 2)
+        {
+            //termination for odd-numbered sizes
+            if (j == curr_sa->size - 1)
+            {
+                curr_sa->strings[new_count++] = curr_sa->strings[j];
+                break;
+            }
+
+            //copies of lines
+            char *str1 = curr_sa->strings[j];
+            char *str2 = curr_sa->strings[j+1];
+
+            //get new line
+            size_t str1_len = strlen(str1);
+            char *new_line = malloc(str1_len + strlen(str2) + 2); //for ' ' and '\0'
+            if (new_line == NULL)
+                return false;
+
+            //copy stuff
+            strcpy(new_line, str1);
+            *(new_line + str1_len) = ' ';
+            strcpy(new_line + str1_len + 1, str2);
+
+            //free old lines
+            free(str1);
+            free(str2);
+
+            curr_sa->strings[new_count++] = new_line;
+        }
+
+        //update size
+        curr_sa->size = new_count;
+    }
+
+    return true;
 }
