@@ -14,7 +14,7 @@ For it to work properly, you need **Google Chrome** or **Chromium Browser** and 
 
 ### How it works
 
-Upon starting the executable, terminal UI will show. Use your keyboard to operate it. You can manage songbooks and songs. If you choose to add a new song, the program will check if it's available on [akordy-kytary](https://akordy-kytary.cz/), then gets the HTML source, parses it and saves the song in a ChordPro-like format. Transposition is also possible.
+Upon starting the executable, terminal UI will show. Use your keyboard to operate it. You can manage songbooks and songs. If you choose to add a new song, the program will check if it's available on [Akordy Kytary](https://akordy.kytary.cz/), then gets the HTML source, parses it and saves the song in a ChordPro-like format. Transposition is also possible.
 
 ### What purpose does this project serve?
 
