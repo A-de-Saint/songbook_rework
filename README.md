@@ -7,6 +7,8 @@
 
 This is a happiness project to make a working **songbook manager** for **czech campfire songs with chords**. It allows you to download songs that get parsed from html and then organize them to songbooks, which are either `.tex` or `.html` - both can be printed into `.pdf`.
 
+I'm still working on this project, it's stability and some proper releases.
+
 ### Dependencies and environment
 
 Songbook rework is coded in C and is made to run on both Linux and Windows. On Linux, simply use **Makefile**. **MinGW** with GCC is needed for compilation on Windows.  
